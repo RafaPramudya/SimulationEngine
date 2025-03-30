@@ -15,4 +15,6 @@ void __sdl_err_log(const char* log);
 #define nullptr NULL;
 #define TODO
 
+// #define LOG_FPS
+
 #endif

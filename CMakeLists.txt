@@ -20,7 +20,7 @@ add_definitions(
     -DGLEW_STATIC
 )
 
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+if(NOT CONFIGURATION MATCHES "Release")
     add_compile_definitions(
         DEBUG
     )

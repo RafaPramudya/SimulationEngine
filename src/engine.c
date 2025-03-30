@@ -88,12 +88,20 @@ void engineEvent(Engine* engine) {
     }
 }
 
-void engineUpdate(Engine* engine) {
-    TODO
+void engineUpdate(Engine* engine, double dT) {
+    engine->currentTicks = dT;
+    engine->ticksPassed += dT;
+
+    #ifdef LOG_FPS
+    printf("FPS : %lf\n", 1 / dT);
+    #endif
 }
 
 void engineRender(Engine* engine) {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    float color = (sinf(engine->ticksPassed) + 1 )/ 2;
+    // printf("%f\n", color);
+
+    glClearColor(color, color, color, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     SDL_GL_SwapWindow(engine->window);

@@ -27,9 +27,15 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    Uint64 now = SDL_GetPerformanceCounter();
+    Uint64 last = 0;
+
     while (engineInstance.isRunning) {
+        last = now;
+        now = SDL_GetPerformanceCounter();
+
         engineEvent(&engineInstance);
-        engineUpdate(&engineInstance);
+        engineUpdate(&engineInstance, (double)((now - last) / (double) SDL_GetPerformanceFrequency()));
         engineRender(&engineInstance);
     }
 

@@ -30,7 +30,7 @@ bool engineInitialization(Engine* engine, const char* title);
 
 void engineEvent(Engine* engine);
 
-void engineUpdate(Engine* engine);
+void engineUpdate(Engine* engine, double dT);
 
 void engineRender(Engine* engine);
 

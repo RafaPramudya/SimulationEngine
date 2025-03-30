@@ -14,18 +14,35 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CONFIGURATION}")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}" CACHE INTERNAL "")
 
 add_definitions(
-	-DTW_STATIC
+    -DTW_STATIC
 	-DTW_NO_LIB_PRAGMA
-	-D_CRT_SECURE_NO_WARNINGS
+	-DTW_NO_DIRECT3D
+    -DGLEW_STATIC
 )
+
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_compile_definitions(
+        DEBUG
+    )
+endif()
 
 project(Engine VERSION 0.0.1)
 
-file(GLOB_RECURSE SRC_FILE src/*.c src/*.cpp)
+find_package(OpenGL REQUIRED)
+
+add_subdirectory(external)
+
+set(BUILD_SHARED_LIBS OFF)
+add_subdirectory(SDL3 EXCLUDE_FROM_ALL)
 
 set(EXECUTABLE_NAME ${PROJECT_NAME})
+file(GLOB_RECURSE SRC_FILE src/*.c src/*.cpp)
 add_executable(${EXECUTABLE_NAME} ${SRC_FILE})
 
-target_include_directories(${EXECUTABLE_NAME} PRIVATE include)
-target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_17)
+target_include_directories(${EXECUTABLE_NAME} PRIVATE
+    include
+    external/glew-2.1.0/include
+)
+target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_99)
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
+target_link_libraries(${EXECUTABLE_NAME} PUBLIC SDL3::SDL3 ${OPENGL_LIBRARY} GLEW_210)

@@ -11,11 +11,6 @@
 #include <stdbool.h>
 #include "globals.h"
 
-typedef enum WARNA {
-    MERAH,
-    KUNING,
-    HIJAU
-} WARNA;
 typedef struct Engine {
     i32 width;
     i32 height;
@@ -24,7 +19,6 @@ typedef struct Engine {
     SDL_Window* window;
     SDL_GLContext context;
     SDL_Event event;
-    WARNA warna_lampu;
 
     bool isRunning;
     f64 ticksPassed;
@@ -36,11 +30,19 @@ extern Engine engineInstance;
 
 bool engine_init(Engine* engine, const char* title);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void engine_event(Engine* engine);
 
 void engine_update(Engine* engine, f64 dT);
 
 void engine_render(Engine* engine);
+
+#ifdef __cplusplus
+}   
+#endif
 
 void engine_deinit(Engine* engine);
 

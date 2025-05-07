@@ -11,9 +11,8 @@
 #define SDL_ERR_LOG(x)
 #endif
 
-#define nullptr NULL;
 #define TODO
 
-// #define LOG_FPS
+#define LOG_FPS
 
 #endif

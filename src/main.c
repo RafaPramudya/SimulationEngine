@@ -1,7 +1,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "engine.h"
+#include "multithread.h"
 
 Engine engineInstance;
 
@@ -27,17 +27,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    Uint64 now = SDL_GetPerformanceCounter();
-    Uint64 last = 0;
-
-    while (engineInstance.isRunning) {
-        last = now;
-        now = SDL_GetPerformanceCounter();
-
-        engine_event(&engineInstance);
-        engine_update(&engineInstance, (double)((now - last) / (double) SDL_GetPerformanceFrequency()));
-        engine_render(&engineInstance);
-    }
+    multithread_run(&engineInstance);
 
     engine_deinit(&engineInstance);
    return 0;

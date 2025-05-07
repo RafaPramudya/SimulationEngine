@@ -5,35 +5,43 @@
 #include <gl/glew.h>
 #include <GL/GL.h>
 
+#include <cglm/cglm.h>
+
 #include <stdio.h>
 #include <stdbool.h>
+#include "globals.h"
 
-
+typedef enum WARNA {
+    MERAH,
+    KUNING,
+    HIJAU
+} WARNA;
 typedef struct Engine {
-    int width;
-    int height;
-    float refreshRate;
+    i32 width;
+    i32 height;
+    f32 refreshRate;
 
     SDL_Window* window;
     SDL_GLContext context;
     SDL_Event event;
+    WARNA warna_lampu;
 
     bool isRunning;
-    double ticksPassed;
-    double currentTicks;
+    f64 ticksPassed;
+    f64 currentTicks;
 
 } Engine;
 
 extern Engine engineInstance;
 
-bool engineInitialization(Engine* engine, const char* title);
+bool engine_init(Engine* engine, const char* title);
 
-void engineEvent(Engine* engine);
+void engine_event(Engine* engine);
 
-void engineUpdate(Engine* engine, double dT);
+void engine_update(Engine* engine, f64 dT);
 
-void engineRender(Engine* engine);
+void engine_render(Engine* engine);
 
-void engineDeInitialization(Engine* engine);
+void engine_deinit(Engine* engine);
 
 #endif

@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
     }
 #endif
 
-    if (engineInitialization(&engineInstance, "Tung Tung Sahur") == false) {
+    if (engine_init(&engineInstance, "Tung Tung Sahur") == false) {
         return -1;
     }
 
@@ -34,11 +34,11 @@ int main(int argc, char* argv[]) {
         last = now;
         now = SDL_GetPerformanceCounter();
 
-        engineEvent(&engineInstance);
-        engineUpdate(&engineInstance, (double)((now - last) / (double) SDL_GetPerformanceFrequency()));
-        engineRender(&engineInstance);
+        engine_event(&engineInstance);
+        engine_update(&engineInstance, (double)((now - last) / (double) SDL_GetPerformanceFrequency()));
+        engine_render(&engineInstance);
     }
 
-    engineDeInitialization(&engineInstance);
+    engine_deinit(&engineInstance);
    return 0;
 }

@@ -20,17 +20,14 @@ add_definitions(
     -DGLEW_STATIC
 )
 
-if(NOT CONFIGURATION MATCHES "Release")
-    add_compile_definitions(
-        DEBUG
-    )
-endif()
-
 project(Engine VERSION 0.0.1)
 
 find_package(OpenGL REQUIRED)
 
 add_subdirectory(external)
+
+set(CGLM_STATIC ON)
+add_subdirectory(cglm EXCLUDE_FROM_ALL)
 
 set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(SDL3 EXCLUDE_FROM_ALL)
@@ -45,4 +42,7 @@ target_include_directories(${EXECUTABLE_NAME} PRIVATE
 )
 target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_99)
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
-target_link_libraries(${EXECUTABLE_NAME} PUBLIC SDL3::SDL3 ${OPENGL_LIBRARY} GLEW_210)
+target_link_libraries(${EXECUTABLE_NAME} PUBLIC SDL3::SDL3 ${OPENGL_LIBRARY} GLEW_210 cglm)
+
+# DEBUG MODE
+target_compile_definitions(${EXECUTABLE_NAME} PUBLIC DEBUG)

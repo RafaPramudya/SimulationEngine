@@ -1,12 +1,12 @@
 #include "engine.h"
 
 #include "constants.h"
-#include "macro.h"
 
-bool engineInitialization(Engine* engine, const char* title) {
+bool engine_init(Engine* engine, const char* title) {
     engine->window = NULL;
     engine->ticksPassed = 0;
     engine->isRunning = false;
+    engine->warna_lampu = MERAH;
     engine->width = 0;
     engine->height = 0;
     engine->refreshRate = 0.0f;
@@ -75,12 +75,27 @@ bool engineInitialization(Engine* engine, const char* title) {
     return true;
 }
 
-void engineEvent(Engine* engine) {
+void engine_event(Engine* engine) {
     while (SDL_PollEvent(&engine->event)) {
         switch (engine->event.type)
         {
         case SDL_EVENT_QUIT:
             engine->isRunning = false;
+            break;
+        case SDL_EVENT_KEY_DOWN:
+            switch (engine->event.key.key) {
+                case SDLK_M:
+                    engine->warna_lampu = MERAH;
+                    break;
+                case SDLK_K:
+                    engine->warna_lampu = KUNING;
+                    break;
+                case SDLK_H:
+                    engine->warna_lampu = HIJAU;
+                    break;
+                default:
+                    break;
+            }
             break;
         default:
             break;
@@ -88,7 +103,7 @@ void engineEvent(Engine* engine) {
     }
 }
 
-void engineUpdate(Engine* engine, double dT) {
+void engine_update(Engine* engine, f64 dT) {
     engine->currentTicks = dT;
     engine->ticksPassed += dT;
 
@@ -97,17 +112,38 @@ void engineUpdate(Engine* engine, double dT) {
     #endif
 }
 
-void engineRender(Engine* engine) {
-    float color = (sinf(engine->ticksPassed) + 1 )/ 2;
+void engine_render(Engine* engine) {
     // printf("%f\n", color);
+    vec3 color;
+    switch (engine->warna_lampu)
+    {
+    case MERAH:
+        color[0] = 1.0;
+        color[1] = 0.0;
+        color[2] = 0.0;
+        break;
+    case KUNING:
+        color[0] = 1.0;
+        color[1] = 1.0;
+        color[2] = 0.0;
+        break;
+    case HIJAU:
+        color[0] = 0.0;
+        color[1] = 1.0;
+        color[2] = 0.0;
+        break;
+    default:
+        break;
+    }
 
-    glClearColor(color, color, color, 1.0f);
+    glClearColor(
+        color[0], color[1], color[2], 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     SDL_GL_SwapWindow(engine->window);
 }
 
-void engineDeInitialization(Engine* engine) {
+void engine_deinit(Engine* engine) {
     SDL_DestroyWindow(engine->window);
     SDL_GL_DestroyContext(engine->context);
     SDL_Quit();

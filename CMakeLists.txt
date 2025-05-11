@@ -40,7 +40,7 @@ target_include_directories(${EXECUTABLE_NAME} PRIVATE
     include
     external/glew-2.1.0/include
 )
-target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_99)
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED YES)
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
 target_link_libraries(${EXECUTABLE_NAME} PUBLIC SDL3::SDL3 ${OPENGL_LIBRARY} GLEW_210 cglm)
 

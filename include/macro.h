@@ -12,7 +12,7 @@
 #endif
 
 #define TODO
-
 #define LOG_FPS
+// #define V_SYNC
 
 #endif

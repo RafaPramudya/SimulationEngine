@@ -3,7 +3,7 @@
 
 #define PI 3.14159265358979323846
 
-const char* window_title = "Tung Tung Sahur";
+#define WINDOW_TITLE "Tung Tung Engine"
 
 #define OpenGL_MAJOR 4
 #define OpenGL_MINOR 4

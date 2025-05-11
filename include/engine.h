@@ -11,39 +11,52 @@
 #include <stdbool.h>
 #include "globals.h"
 
-typedef struct Engine {
-    i32 width;
-    i32 height;
-    f32 refreshRate;
-
+typedef struct EngineState {
     SDL_Window* window;
-    SDL_GLContext context;
+    SDL_GLContext gl_context;
+
     SDL_Event event;
 
-    bool isRunning;
-    f64 ticksPassed;
-    f64 currentTicks;
+    struct render_data_t {
+        i32 width;
+        i32 height;
+        f32 refreshRate;
+    } render_data;
+    struct update_data_t {
+        f64 currentTicks;
+        f64 ticksPassed;
+    } update_data;
 
+} EngineState;
+
+#ifdef __cplusplus
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
+
+typedef struct Engine {
+    std::atomic<bool> isRunning{true};
+    std::mutex physicsMutex;
+    
+    EngineState* engineState;
 } Engine;
 
-extern Engine engineInstance;
-
-bool engine_init(Engine* engine, const char* title);
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+bool engineState_create(EngineState* state, const char* title);
 
-void engine_event(Engine* engine);
+void engine_update(EngineState* state, f64 dT);
 
-void engine_update(Engine* engine, f64 dT);
+void engine_render(EngineState* state);
 
-void engine_render(Engine* engine);
+void engineState_destroy(EngineState* state);
 
 #ifdef __cplusplus
 }   
 #endif
-
-void engine_deinit(Engine* engine);
 
 #endif

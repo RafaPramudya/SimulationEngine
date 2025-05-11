@@ -2,13 +2,14 @@
 
 #include "constants.h"
 
-bool engine_init(Engine* engine, const char* title) {
-    engine->window = NULL;
-    engine->ticksPassed = 0;
-    engine->isRunning = false;
-    engine->width = 0;
-    engine->height = 0;
-    engine->refreshRate = 0.0f;
+bool engineState_create(EngineState* state, const char* title) {
+    state->render_data.width = 0;
+    state->render_data.height = 0;
+    state->render_data.refreshRate = 0.0f;
+    state->window = NULL;
+    state->gl_context = NULL;
+    state->update_data.ticksPassed = 0.0f;
+    state->update_data.currentTicks = 0.0f;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) == false ) {
         SDL_ERR_LOG("SDL_Init Error");
@@ -23,14 +24,16 @@ bool engine_init(Engine* engine, const char* title) {
     }
 
     const SDL_DisplayMode* dm = SDL_GetCurrentDisplayMode(displays[0]);
-    engine->width = dm->w;
-    engine->height = dm->h;
-    engine->refreshRate = dm->refresh_rate;
+    // state->render_data.width = dm->w;
+    // state->render_data.height = dm->h;
+    state->render_data.width = 800;
+    state->render_data.height = 600;
+    state->render_data.refreshRate = dm->refresh_rate;
 
     uint32_t window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN;
-    // engine->window = SDL_CreateWindow(title, engine->width, engine->height, window_flags);
-    engine->window = SDL_CreateWindow(title, 800, 600, window_flags);
-    if (engine->window == NULL) {
+    state->window = SDL_CreateWindow(title, state->render_data.width, state->render_data.height, window_flags);
+    // state->window = SDL_CreateWindow(title, 800, 600, window_flags);
+    if (state->window == NULL) {
         SDL_ERR_LOG("SDL_Window tidak bisa dibuat");
         return false;
     }
@@ -41,8 +44,8 @@ bool engine_init(Engine* engine, const char* title) {
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    engine->context = SDL_GL_CreateContext(engine->window);
-    if (engine->context == NULL) {
+    state->gl_context = SDL_GL_CreateContext(state->window);
+    if (state->gl_context == NULL) {
         SDL_ERR_LOG("SDL_Context tidak bisa dibuat");
         return false;
     }
@@ -55,6 +58,14 @@ bool engine_init(Engine* engine, const char* title) {
         return false;
     }
 
+    // Set VSYNC only when VSYNC macro is defined
+#ifdef V_SYNC
+    if (SDL_GL_SetSwapInterval(1) < 0) {
+        ERR_LOG("VSync tidak bisa diaktifkan");
+        return false;
+    }
+#endif
+
 #ifdef DEBUG
 
     int nrAttr;
@@ -66,42 +77,27 @@ bool engine_init(Engine* engine, const char* title) {
 
 #endif
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glViewport(0,0, engine->width, engine->height);
+    SDL_ShowWindow(state->window);
 
-    engine->isRunning = true;
-    SDL_ShowWindow(engine->window);
+    glClearColor(0.529f, 0.808f, 0.922f, 1.0f);
+    glViewport(0, 0, state->render_data.width, state->render_data.height);
 
     return true;
 }
 
-void engine_event(Engine* engine) {
-    while (SDL_PollEvent(&engine->event)) {
-        switch (engine->event.type)
-        {
-        case SDL_EVENT_QUIT:
-            engine->isRunning = false;
-            break;
-        case SDL_EVENT_KEY_DOWN:
-            break;
-        }
-    }
+void engine_update(EngineState* state, f64 dT) {
+    state->update_data.currentTicks = dT;
+    state->update_data.ticksPassed += dT;
 }
 
-void engine_update(Engine* engine, f64 dT) {
-    engine->currentTicks = dT;
-    engine->ticksPassed += dT;
-}
-
-void engine_render(Engine* engine) {
+void engine_render(EngineState* state) {
     glClearColor(0.529f, 0.808f, 0.922f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    SDL_GL_SwapWindow(engine->window);
+    SDL_GL_SwapWindow(state->window);
 }
 
-void engine_deinit(Engine* engine) {
-    SDL_DestroyWindow(engine->window);
-    SDL_GL_DestroyContext(engine->context);
+void engineState_destroy(EngineState* state) {
+    SDL_DestroyWindow(state->window);
+    SDL_GL_DestroyContext(state->gl_context);
     SDL_Quit();
 }

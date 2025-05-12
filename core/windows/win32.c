@@ -1,7 +1,24 @@
 #include "win32.h"
+#include "appstate.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+    AppState* appState;
+    if (uMsg == WM_CREATE) {
+        appState_setPState(hwnd, lParam);
+        appState = appState_getPState(hwnd);
+    } else {
+        appState = appState_getPState(hwnd);
+    }
+
     switch (uMsg) {
+        case WM_CLOSE:
+            if (MessageBox(hwnd, L"Yakin mau keluar?", L"Keluar", MB_OKCANCEL) == IDOK) {
+                DestroyWindow(hwnd);
+            } else {
+                MessageBox(hwnd, L"Oke :>", L"Info", MB_OK);
+            }
+            return 0;
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
@@ -18,6 +35,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 BOOL InitializeWindow(HWND* _outWndHandle, HINSTANCE hInstance, int nCmdShow) {
+    AppState* appState = appState_create();
+
     const wchar_t CLASS_NAME[] = L"Engine Window Class";
     WNDCLASS wc = {0};
 
@@ -35,7 +54,7 @@ BOOL InitializeWindow(HWND* _outWndHandle, HINSTANCE hInstance, int nCmdShow) {
         NULL,
         NULL,
         hInstance,
-        NULL
+        appState // Pass the AppState as the lpCreateParams
     );
 
     if (hwnd == NULL) {

@@ -1,5 +1,6 @@
 #include "win32.h"
 #include "appstate.h"
+#include "event.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
@@ -13,22 +14,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
     switch (uMsg) {
         case WM_CLOSE:
-            if (MessageBox(hwnd, L"Yakin mau keluar?", L"Keluar", MB_OKCANCEL) == IDOK) {
-                DestroyWindow(hwnd);
-            } else {
-                MessageBox(hwnd, L"Oke :>", L"Info", MB_OK);
-            }
+            CloseMessage(hwnd);
+            return 0;
+        case WM_PAINT:
+            PaintMessage(hwnd, appState);
             return 0;
         case WM_DESTROY:
             PostQuitMessage(0);
-            return 0;
-        case WM_PAINT:
-            {
-                PAINTSTRUCT ps;
-                HDC hdc = BeginPaint(hwnd, &ps);
-                FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-                EndPaint(hwnd, &ps);
-            }
+            appState_destroy(appState);
             return 0;
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);

@@ -3,7 +3,6 @@
 #include "event.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
     AppState* appState;
     if (uMsg == WM_CREATE) {
         appState_setPState(hwnd, lParam);

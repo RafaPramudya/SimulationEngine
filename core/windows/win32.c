@@ -1,5 +1,6 @@
 #include "win32.h"
 #include "appstate.h"
+#include "render/renderer.h"
 #include "context.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -14,6 +15,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_DESTROY:
             context_destroy();
             PostQuitMessage(0);
+            return 0;
+        case WM_SIZE:
+            WORD width = LOWORD(lParam);
+            WORD height = HIWORD(lParam);
+            RendererResize(width, height);
             return 0;
         case WM_PAINT:
             {

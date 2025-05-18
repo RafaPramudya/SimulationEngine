@@ -8,14 +8,16 @@ if (MSVC AND NOT ${MSVC_VERSION} LESS 1400)
     set(CMAKE_BUILD_GENERATOR Win32)
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CONFIGURATION}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CONFIGURATION}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}" CACHE INTERNAL "")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Configuring build in Debug mode")
     add_definitions(-DDEBUG)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(STATUS "Configuring build in Release mode")
     if (MSVC)
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2")
     else()
@@ -52,7 +54,6 @@ endif()
 
 target_include_directories(${EXECUTABLE_NAME} PUBLIC
     core
-    core/windows
 )
 target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_17)
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)

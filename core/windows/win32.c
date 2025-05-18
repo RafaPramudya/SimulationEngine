@@ -2,14 +2,6 @@
 #include "appstate.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    AppState* appState;
-    if (uMsg == WM_CREATE) {
-        appState_setPState(hwnd, lParam);
-        appState = appState_getPState(hwnd);
-    } else {
-        appState = appState_getPState(hwnd);
-    }
-
     switch (uMsg) {
         case WM_CLOSE:
             if (MessageBox(hwnd, L"Yakin mau keluar?", L"Keluar", MB_OKCANCEL) == IDOK) {
@@ -34,8 +26,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 BOOL InitializeWindow(HWND* _outWndHandle, HINSTANCE hInstance, int nCmdShow) {
-    AppState* appState = appState_create();
-
     const wchar_t CLASS_NAME[] = L"Engine Window Class";
     WNDCLASS wc = {0};
 
@@ -53,15 +43,16 @@ BOOL InitializeWindow(HWND* _outWndHandle, HINSTANCE hInstance, int nCmdShow) {
         NULL,
         NULL,
         hInstance,
-        appState // Pass the AppState as the lpCreateParams
+        NULL
     );
 
     if (hwnd == NULL) {
         return FALSE;
     }
 
+    appState_init(hwnd);
+
     *_outWndHandle = hwnd;
     ShowWindow(hwnd, nCmdShow);
-
     return TRUE;
 }

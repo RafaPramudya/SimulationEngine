@@ -33,19 +33,28 @@ add_definitions(
 
 project(Engine VERSION 0.0.1)
 
+find_package(OpenGL REQUIRED)
+
 # Ensure the main.c file is included in the SRC_FILE list
 file(GLOB_RECURSE SRC_FILE CONFIGURE_DEPENDS 
     core/*.c
     core/*.cpp
     core/windows/*.c
     core/windows/*.cpp
+    core/utils/*.c
+    core/utils/*.cpp
+    core/renderer/*.c
+    core/renderer/*.cpp
     core/main.c  # Explicitly include main.c
 )
 
 # Set the linker subsystem to WINDOWS for Windows native applications
 if (WIN32 AND MSVC)
     set(EXECUTABLE_NAME ${PROJECT_NAME})
-    add_executable(${EXECUTABLE_NAME} ${SRC_FILE})
+    add_executable(${EXECUTABLE_NAME} ${SRC_FILE}
+        lib/glad/src/glad.c
+        lib/glad/src/glad_wgl.c
+    )
     set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 else()
     # ERROR: Unsupported platform
@@ -54,6 +63,8 @@ endif()
 
 target_include_directories(${EXECUTABLE_NAME} PUBLIC
     core
+    lib/glad/include
 )
 target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_17)
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GL)

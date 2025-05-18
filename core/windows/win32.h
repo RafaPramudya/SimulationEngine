@@ -7,8 +7,9 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include "utils/types.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL InitializeWindow(HWND* _outWndHandle, HINSTANCE hInstance, int nCmdShow);
+BOOL InitializeWindow(HWND* _outWndHandle, HINSTANCE hInstance, int nCmdShow, u32 w_width, u32 w_height);
 
 #endif // WINLIBOS_H

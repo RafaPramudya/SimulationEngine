@@ -1,5 +1,6 @@
 #include "windows/win32.h"
 #include "windows/appstate.h"
+#include "render/renderer.h"
 #include "wchar.h"
 
 extern AppState appstate_ins;
@@ -12,11 +13,12 @@ static f64 get_hp_time(void) {
 }
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
-
     HWND hwnd;
-    if (!InitializeWindow(&hwnd, hInstance, nCmdShow)) {
+    if (!InitializeWindow(&hwnd, hInstance, nCmdShow, 800, 600)) {
         return 0;
     }
+
+    PrepareRenderer();
 
     f64 lastTime = get_hp_time();
     f64 currentTime, fps;
@@ -54,6 +56,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 DispatchMessage(&msg);
             }
         }
+
+        RenderLoop();
     }
 
     return 0;

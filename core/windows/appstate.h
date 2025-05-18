@@ -11,10 +11,15 @@ typedef struct AppState_s {
     f64 passedTime;
 
     HWND hwnd;
+    HDC hdc;
+    HGLRC hglrc;
+
+    u32 width;
+    u32 height;
 
     bool isRunning;
 } AppState;
 
-bool appState_init(HWND hwnd_in);
+bool appState_init(HWND hwnd_in, HDC hdc_in, u32 width, u32 height);
 
 #endif // APPSTATE_H

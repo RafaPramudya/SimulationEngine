@@ -3,7 +3,9 @@
 #include "render/renderer.h"
 #include "wchar.h"
 
-extern AppState appstate_ins;
+#include <stdio.h>
+
+extern AppState appstate;
 
 static f64 get_hp_time(void) {
     LARGE_INTEGER frequency, time;
@@ -13,6 +15,15 @@ static f64 get_hp_time(void) {
 }
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
+
+    #ifdef DEBUG
+    AllocConsole();
+
+    FILE* dummy;
+    freopen_s(&dummy, "CONOUT$", "w", stdout);
+    freopen_s(&dummy, "CONOUT$", "w", stderr);
+    #endif
+
     HWND hwnd;
     if (!InitializeWindow(&hwnd, hInstance, nCmdShow, 800, 600)) {
         return 0;
@@ -25,20 +36,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     f64 passedFPS = 0.0;
     int frameCount = 0;
 
-    while (appstate_ins.isRunning) {
+    while (appstate.isRunning) {
         currentTime = get_hp_time();
-        appstate_ins.deltaTime = currentTime - lastTime;
-        appstate_ins.passedTime += appstate_ins.deltaTime;
+        appstate.deltaTime = currentTime - lastTime;
+        appstate.passedTime += appstate.deltaTime;
         lastTime = currentTime;
 
         #ifdef DEBUG
         frameCount++;
-        passedFPS += appstate_ins.deltaTime;
+        passedFPS += appstate.deltaTime;
 
         if (passedFPS >= 1.0) {
 
             wchar_t buffer[128];
-            swprintf(buffer, 128, L"Tung Tung Sahur - %d FPS, %lf dT", frameCount, appstate_ins.deltaTime);
+            swprintf(buffer, 128, L"Tung Tung Sahur - %d FPS, %lf dT", frameCount, appstate.deltaTime);
             SetWindowText(hwnd, buffer);
 
             frameCount = 0;
@@ -49,7 +60,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         MSG msg;
         if (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
             if (msg.message == WM_QUIT) {
-                appstate_ins.isRunning = false;
+                appstate.isRunning = false;
                 continue;
             } else {
                 TranslateMessage(&msg);

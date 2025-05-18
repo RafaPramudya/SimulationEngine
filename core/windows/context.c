@@ -16,7 +16,7 @@
 #include "glad/glad.h"
 #include "glad/glad_wgl.h"
 
-extern AppState appstate_ins;
+extern AppState appstate;
 
 void context_init(void) {
     PIXELFORMATDESCRIPTOR pfd;
@@ -29,14 +29,14 @@ void context_init(void) {
     pfd.cDepthBits = 32;
     pfd.cStencilBits = 8;
 
-    i32 pixelFormat = ChoosePixelFormat(appstate_ins.hdc, &pfd);
-    SetPixelFormat(appstate_ins.hdc, pixelFormat, &pfd);
+    i32 pixelFormat = ChoosePixelFormat(appstate.hdc, &pfd);
+    SetPixelFormat(appstate.hdc, pixelFormat, &pfd);
 
-    HGLRC tempRC = wglCreateContext(appstate_ins.hdc);
-    wglMakeCurrent(appstate_ins.hdc, tempRC);
+    HGLRC tempRC = wglCreateContext(appstate.hdc);
+    wglMakeCurrent(appstate.hdc, tempRC);
 
     assert(gladLoadGL());
-    assert(gladLoadWGL(appstate_ins.hdc));
+    assert(gladLoadWGL(appstate.hdc));
 
     const i32 attribList[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
@@ -46,17 +46,16 @@ void context_init(void) {
         WGL_CONTEXT_CORE_PROFILE_BIT_ARB, 0
     };
 
-    HGLRC hglrc = wglCreateContextAttribsARB(appstate_ins.hdc, 0, attribList);
-    appstate_ins.hglrc = hglrc;
+    HGLRC hglrc = wglCreateContextAttribsARB(appstate.hdc, 0, attribList);
+    appstate.hglrc = hglrc;
     wglMakeCurrent(NULL,NULL);
     wglDeleteContext(tempRC);
-    wglMakeCurrent(appstate_ins.hdc, appstate_ins.hglrc);
-
+    wglMakeCurrent(appstate.hdc, appstate.hglrc);
 
     #ifdef DEBUG
-    char buffer[128];
-    snprintf(buffer, 128, "OpenGL Sukses diLoad\nVersion: %d.%d", GLVersion.major, GLVersion.minor);
-    MessageBox(0, buffer, "Informasi", MB_OK);
+    printf("OpenGL Berhasil diload\n");
+    printf("Versi: %s\n", glGetString(GL_VERSION));
+    printf("Renderer: %s\n", glGetString(GL_RENDERER));
     #endif
 
     bool swapControlSupported = strstr(wglGetExtensionsStringEXT(), "WGL_EXT_swap_control") != 0;
@@ -66,19 +65,19 @@ void context_init(void) {
         #ifdef VSYNC
         if (wglSwapIntervalEXT(1)) {
             #ifdef DEBUG
-            MessageBox(appstate_ins.hdc, L"VSync diaktifkan", L"Informasi", MB_OK);
+            printf("VSync diaktifkan\n");
             #endif
         }
         #endif
     } else {
         #ifdef DEBUG
-        MessageBox(appstate_ins.hdc, L"Tidak Support VSync", L"Informasi", MB_OK);
+        printf("Aplikasi tidak support VSync");
         #endif
     }
 }
 
 void context_destroy(void) {
     wglMakeCurrent(NULL, NULL);
-    wglDeleteContext(appstate_ins.hglrc);
-    ReleaseDC(appstate_ins.hwnd, appstate_ins.hdc);
+    wglDeleteContext(appstate.hglrc);
+    ReleaseDC(appstate.hwnd, appstate.hdc);
 }

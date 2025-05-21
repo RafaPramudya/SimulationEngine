@@ -5,12 +5,14 @@
 #include "glad/glad.h"
 #include "glad/glad_wgl.h"
 
+#include <math.h>
+
 // Global variable for renderstate
 RenderState renderstate;
 extern AppState appstate;
 
 void PrepareRenderer(void) {
-    compileProgram("assets/shader/vertex.glsl", "assets/shader/fragment.glsl", &renderstate.main_shader);
+    compileProgram("assets/shader/basic.vert", "assets/shader/basic.frag", &renderstate.main_shader);
 
     glGenVertexArrays(1, &renderstate.VAO);
     glBindVertexArray(renderstate.VAO);
@@ -42,6 +44,10 @@ void RenderLoop(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glUseProgram(renderstate.main_shader.pId);
+
+    float opacity = sin(appstate.passedTime) / 2.0f + 0.5f;
+    glUniform1f(glGetUniformLocation(renderstate.main_shader.pId, "uOpac"), opacity);
+
     glBindVertexArray(renderstate.VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 

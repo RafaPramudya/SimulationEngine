@@ -3,28 +3,35 @@
 #include <assert.h>
 
 #include "glad/glad.h"
+#include "utils/importer.h"
 
 static bool checkCompileError(u32 shader);
 static bool checkLinkError(u32 pId);
 
-void compileShaderProg(const char* vertexSource, const char* fragmentSource, Shader* shader) {
-    u32 vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexSource, NULL);
-    glCompileShader(vertexShader);
-    assert(checkCompileError(vertexShader));
+u32 compileShader(GLenum type, const char* source) {
+    u32 shader = glCreateShader(type);
+    glShaderSource(shader, 1, &source, NULL);
+    glCompileShader(shader);
+    assert(checkCompileError(shader));
 
-    u32 fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-    glCompileShader(fragmentShader);
-    assert(checkCompileError(fragmentShader));
+    return shader;
+}
+
+void compileProgram(const char* vertexFilename, const char* fragmentFilename, Shader* shader) {
+    char* vertexSource = getContentFromFile(vertexFilename);
+    char* fragmentSource = getContentFromFile(fragmentFilename);
+
+    u32 vertexShader = compileShader(GL_VERTEX_SHADER, vertexSource);
+    u32 fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentSource);
 
     shader->pId = glCreateProgram();
     glAttachShader(shader->pId, vertexShader);
     glAttachShader(shader->pId, fragmentShader);
     glLinkProgram(shader->pId);
     assert(checkLinkError(shader->pId));
+
+    freeContent(vertexSource);
+    freeContent(fragmentSource);
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);

@@ -10,7 +10,7 @@ RenderState renderstate;
 extern AppState appstate;
 
 void PrepareRenderer(void) {
-    compileShaderProg(vertexSource, fragmentSource, &renderstate.main_shader);
+    compileProgram("assets/shader/vertex.glsl", "assets/shader/fragment.glsl", &renderstate.main_shader);
 
     glGenVertexArrays(1, &renderstate.VAO);
     glBindVertexArray(renderstate.VAO);

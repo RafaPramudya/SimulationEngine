@@ -7,6 +7,9 @@ typedef struct Shader_s {
     u32 pId;
 } Shader;
 
-void compileShaderProg(const char* vertexSource, const char* fragmentSource, Shader* shader);
+typedef unsigned int GLenum;
+
+u32 compileShader(GLenum type, const char* source);
+void compileProgram(const char* vertexFilename, const char* fragmentFilename, Shader* shader);
 
 #endif // SHADER_H

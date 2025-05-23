@@ -64,6 +64,8 @@ endif()
 target_include_directories(${EXECUTABLE_NAME} PUBLIC
     core
     lib/glad/include
+    lib
+    
 )
 target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_17)
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)

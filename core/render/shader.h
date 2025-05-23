@@ -12,4 +12,6 @@ typedef unsigned int GLenum;
 u32 compileShader(GLenum type, const char* source);
 void compileProgram(const char* vertexFilename, const char* fragmentFilename, Shader* shader);
 
+void freeShader(Shader shader);
+
 #endif // SHADER_H

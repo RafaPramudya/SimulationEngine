@@ -37,6 +37,10 @@ void compileProgram(const char* vertexFilename, const char* fragmentFilename, Sh
     glDeleteShader(fragmentShader);
 }
 
+void freeShader(Shader shader) {
+    glDeleteProgram(shader.pId);
+}
+
 static bool checkCompileError(u32 shader) {
     i32 success;
     char infoLog[512];

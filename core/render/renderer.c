@@ -14,22 +14,34 @@ extern AppState appstate;
 void PrepareRenderer(void) {
     compileProgram("assets/shader/basic.vert", "assets/shader/basic.frag", &renderstate.main_shader);
 
+    renderstate.ttsTexture = createTexture("assets/images/orang_jelek.jpg");
+
     glGenVertexArrays(1, &renderstate.VAO);
     glBindVertexArray(renderstate.VAO);
 
     glGenBuffers(1, &renderstate.VBO);
     glBindBuffer(GL_ARRAY_BUFFER, renderstate.VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVerts), quadVerts, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &renderstate.EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderstate.EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadInds), quadInds, GL_STATIC_DRAW);
 
     // Lokasi Layout 0 vec3
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (const void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (const void*)(3 * sizeof(float)));
+    // Lokasi Layout 1 vec3
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // Lokasi Layout 2 vec2
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glUseProgram(renderstate.main_shader.pId);
 
@@ -43,13 +55,19 @@ void RenderLoop(void) {
     glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    glUseProgram(renderstate.main_shader.pId);
+    Shader* mainShader = &renderstate.main_shader;
+
+    glUseProgram(mainShader->pId);
 
     float opacity = sin(appstate.passedTime) / 2.0f + 0.5f;
-    glUniform1f(glGetUniformLocation(renderstate.main_shader.pId, "uOpac"), opacity);
+    glUniform1f(glGetUniformLocation(mainShader->pId, "uOpac"), opacity);
+
+    glActiveTexture(GL_TEXTURE0); 
+    glBindTexture(GL_TEXTURE_2D, renderstate.ttsTexture.id);
 
     glBindVertexArray(renderstate.VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, sizeof(quadInds) / sizeof(*quadInds), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 
     SwapBuffers(appstate.hdc);
 }
@@ -58,4 +76,9 @@ void RendererResize(u32 width, u32 height) {
     appstate.width = width;
     appstate.height = height;
     glViewport(0, 0, width, height);
+}
+
+void QuitRenderer(void) {
+    freeShader(renderstate.main_shader);
+    freeTexture(renderstate.ttsTexture);
 }

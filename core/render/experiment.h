@@ -3,11 +3,16 @@
 
 #include "utils/types.h"
 
-static f32 vertices[] = {
-    /*      POS       */  /*    COL      */
-    -0.5f, -0.5f,  0.0f,  1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f,  0.0f,  0.0f, 1.0f, 0.0f,
-     0.0f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f,
+static float quadVerts[] = {
+    // positions      // colors       // tex coords
+    -0.5, -0.5, 0,        1,1,1,         0.0, 0.0, // bottom left
+     0.5, -0.5, 0,        1,1,1,         1.0, 0.0, // bottom right
+     0.5,  0.5, 0,        1,1,1,         1.0, 1.0, // top right
+    -0.5,  0.5, 0,        1,1,1,         0.0, 1.0  // top left
+};
+static u32 quadInds[] = {
+    0, 1, 2,
+    0, 2, 3
 };
 
 #endif

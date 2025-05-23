@@ -3,10 +3,10 @@
 out vec4 FragColor;
 
 in vec3 mCol;
+in vec2 mTexCoord;
 
-uniform float uOpac;
+uniform sampler2D uTexture;
 
 void main() {
-    vec3 opacedColor = mCol * uOpac;
-    FragColor = vec4(opacedColor, 1.0f);
+    FragColor = texture(uTexture, mTexCoord);
 }

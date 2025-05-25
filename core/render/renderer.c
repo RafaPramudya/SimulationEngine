@@ -5,6 +5,8 @@
 #include "glad/glad.h"
 #include "glad/glad_wgl.h"
 
+#include "cglm/cglm.h"
+
 #include <math.h>
 
 // Global variable for renderstate
@@ -56,11 +58,14 @@ void RenderLoop(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     Shader* mainShader = &renderstate.main_shader;
-
     glUseProgram(mainShader->pId);
 
-    float opacity = sin(appstate.passedTime) / 2.0f + 0.5f;
-    glUniform1f(glGetUniformLocation(mainShader->pId, "uOpac"), opacity);
+    mat4 transform;
+    glm_mat4_identity(transform);
+    glm_translate(transform, (vec3){0.3, 0.2, 0.0});
+    glm_rotate(transform, 50.0f * glm_rad(appstate.passedTime), (vec3){0.0, 0.0, 1.0});
+
+    glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "transform"), 1, GL_FALSE, transform[0]);
 
     glActiveTexture(GL_TEXTURE0); 
     glBindTexture(GL_TEXTURE_2D, renderstate.ttsTexture.id);

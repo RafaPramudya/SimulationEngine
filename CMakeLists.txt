@@ -43,10 +43,13 @@ file(GLOB_RECURSE SRC_FILE CONFIGURE_DEPENDS
     core/windows/*.cpp
     core/utils/*.c
     core/utils/*.cpp
-    core/renderer/*.c
-    core/renderer/*.cpp
+    core/render/*.c
+    core/render/*.cpp
     core/main.c  # Explicitly include main.c
 )
+
+set(CGLM_STATIC ON)
+add_subdirectory(cglm EXCLUDE_FROM_ALL)
 
 # Set the linker subsystem to WINDOWS for Windows native applications
 if (WIN32 AND MSVC)
@@ -65,8 +68,7 @@ target_include_directories(${EXECUTABLE_NAME} PUBLIC
     core
     lib/glad/include
     lib
-    
 )
 target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_17)
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GL)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GL cglm_headers)

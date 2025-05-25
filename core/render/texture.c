@@ -9,6 +9,10 @@
 Texture createTexture(const char* imageName) {
     stbi_set_flip_vertically_on_load(true);
 
+    #ifdef DEBUG
+    printf("Loading gambar : %s\n", imageName);
+    #endif
+
     i32 width, height, nrChannels;
     unsigned char* data = stbi_load(imageName, &width, &height, &nrChannels, 0);
 

@@ -14,7 +14,7 @@ extern AppState appstate;
 void PrepareRenderer(void) {
     compileProgram("assets/shader/basic.vert", "assets/shader/basic.frag", &renderstate.main_shader);
 
-    renderstate.ttsTexture = createTexture("assets/images/orang_jelek.jpg");
+    renderstate.ttsTexture = createTexture("assets/images/kelinci.png");
 
     glGenVertexArrays(1, &renderstate.VAO);
     glBindVertexArray(renderstate.VAO);

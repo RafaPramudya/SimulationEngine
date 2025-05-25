@@ -60,12 +60,21 @@ void RenderLoop(void) {
     Shader* mainShader = &renderstate.main_shader;
     glUseProgram(mainShader->pId);
 
-    mat4 transform;
-    glm_mat4_identity(transform);
-    glm_translate(transform, (vec3){0.3, 0.2, 0.0});
-    glm_rotate(transform, 50.0f * glm_rad(appstate.passedTime), (vec3){0.0, 0.0, 1.0});
+    mat4 model;
+    mat4 view;
+    mat4 projection;
 
-    glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "transform"), 1, GL_FALSE, transform[0]);
+    glm_mat4_identity(model);
+    glm_rotate(model, 75.0f * glm_rad(appstate.passedTime), (vec3){1.0f, 0.0f, 0.0f});
+
+    glm_mat4_identity(view);
+    glm_translate(view, (vec3){0.0f, 0.0f, -3.0f});
+
+    glm_perspective(glm_rad(50.0f), (float)appstate.width / (float)appstate.height, 0.1f, 100.0f, projection);
+
+    glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "model"), 1, GL_FALSE, model[0]);
+    glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "view"), 1, GL_FALSE, view[0]);
+    glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "projection"), 1, GL_FALSE, projection[0]);
 
     glActiveTexture(GL_TEXTURE0); 
     glBindTexture(GL_TEXTURE_2D, renderstate.ttsTexture.id);

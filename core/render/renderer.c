@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "camera.h"
 #include "experiment.h"
 #include "windows/appstate.h"
 #include "windows/event.h"
@@ -51,11 +52,15 @@ void PrepareRenderer(void) {
 
     glViewport(0, 0, appstate.width, appstate.height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    CameraInit();
 }
 
 void RenderEvent(void) {
     if (IS_KEY_DOWN(event.keyStates, 'P')) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    CameraEvent();
 }
 
 void RenderLoop(void) {
@@ -74,9 +79,8 @@ void RenderLoop(void) {
     glm_mat4_identity(model);
     glm_rotate(model, 75.0f * glm_rad(appstate.passedTime), (vec3){1.0f, 0.0f, 0.0f});
 
-    glm_mat4_identity(view);
-    glm_translate(view, (vec3){0.0f, 0.0f, -3.0f});
-
+    getCameraView(&view);
+    
     glm_perspective(glm_rad(50.0f), (float)appstate.width / (float)appstate.height, 0.1f, 100.0f, projection);
 
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "model"), 1, GL_FALSE, model[0]);

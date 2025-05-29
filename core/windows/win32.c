@@ -1,7 +1,11 @@
 #include "win32.h"
 #include "appstate.h"
-#include "render/renderer.h"
 #include "context.h"
+#include "event.h"
+
+#include "render/renderer.h"
+
+extern Event event;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -29,6 +33,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 EndPaint(hwnd, &ps);
             }
             return 0;
+        case WM_ACTIVATE:
+            event.isWindowActive = (LOWORD(wParam) != WA_INACTIVE);
+            if (!event.isWindowActive) memset(event.keyStates, 0, sizeof(event.keyStates));
+            return 0;
+        case WM_KILLFOCUS:
+            memset(event.keyStates, 0, sizeof(event.keyStates));
+            event.isWindowActive = false;
+            return 0;
+        case WM_KEYDOWN:
+            SET_KEY_STATE(event.keyStates, wParam, 1);
+            break;
+        case WM_KEYUP:
+            SET_KEY_STATE(event.keyStates, wParam, 0);
+            break;
         }
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }

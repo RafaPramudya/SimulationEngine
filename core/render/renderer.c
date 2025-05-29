@@ -1,6 +1,7 @@
 #include "renderer.h"
 #include "experiment.h"
 #include "windows/appstate.h"
+#include "windows/event.h"
 
 #include "glad/glad.h"
 #include "glad/glad_wgl.h"
@@ -12,11 +13,12 @@
 // Global variable for renderstate
 RenderState renderstate;
 extern AppState appstate;
+extern Event event;
 
 void PrepareRenderer(void) {
     compileProgram("assets/shader/basic.vert", "assets/shader/basic.frag", &renderstate.main_shader);
 
-    renderstate.ttsTexture = createTexture("assets/images/kelinci.png");
+    renderstate.ttsTexture = createTexture("assets/images/sunda.jpeg");
 
     glGenVertexArrays(1, &renderstate.VAO);
     glBindVertexArray(renderstate.VAO);
@@ -49,6 +51,11 @@ void PrepareRenderer(void) {
 
     glViewport(0, 0, appstate.width, appstate.height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void RenderEvent(void) {
+    if (IS_KEY_DOWN(event.keyStates, 'P')) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void RenderLoop(void) {

@@ -20,4 +20,6 @@ void RendererResize(u32 width, u32 height);
 void RenderLoop(void);
 void QuitRenderer(void);
 
+void RenderEvent(void);
+
 #endif

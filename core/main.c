@@ -57,6 +57,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         }
         #endif
 
+        RenderEvent();
         MSG msg;
         if (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
             if (msg.message == WM_QUIT) {

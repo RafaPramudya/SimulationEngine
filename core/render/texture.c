@@ -9,13 +9,13 @@
 Texture createTexture(const char* imageName) {
     stbi_set_flip_vertically_on_load(true);
 
-    #ifdef DEBUG
-    printf("Loading gambar : %s\n", imageName);
-    #endif
-
+    
     i32 width, height, nrChannels;
     unsigned char* data = stbi_load(imageName, &width, &height, &nrChannels, 0);
-
+    
+    #ifdef DEBUG
+    printf("Loading gambar : %s, width : %d, height : %d, nrChannels : %d\n", imageName,width, height, nrChannels);
+    #endif
     assert(data);
 
     u32 texId;
@@ -27,12 +27,17 @@ Texture createTexture(const char* imageName) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    GLenum format = GL_RGB;
-    if (nrChannels == 1) format = GL_RED;
-    else if (nrChannels == 3) format = GL_RGB;
-    else if (nrChannels == 4) format = GL_RGBA;
+    // Swap BGR to RGB if needed (common in some JPEGs)
+    // if (nrChannels == 3) {
+    //     for (int i = 0; i < width * height; i++) {
+    //         unsigned char tmp = data[i * 3];
+    //         data[i * 3] = data[i * 3 + 2];
+    //         data[i * 3 + 2] = tmp;
+    //     }
+    // }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+// Upload to OpenGL
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, (nrChannels == 4) ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(data);

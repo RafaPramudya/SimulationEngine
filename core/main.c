@@ -1,11 +1,13 @@
 #include "windows/win32.h"
 #include "windows/appstate.h"
+#include "windows/event.h"
 #include "render/renderer.h"
 #include "wchar.h"
 
 #include <stdio.h>
 
 extern AppState appstate;
+extern Event event;
 
 static f64 get_hp_time(void) {
     LARGE_INTEGER frequency, time;
@@ -29,6 +31,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         return 0;
     }
 
+    EventInit();
     PrepareRenderer();
 
     f64 lastTime = get_hp_time();
@@ -57,7 +60,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         }
         #endif
 
-        RenderEvent();
         MSG msg;
         if (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
             if (msg.message == WM_QUIT) {
@@ -68,8 +70,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                 DispatchMessage(&msg);
             }
         }
-
+        
+        RenderEvent();
         RenderLoop();
+        memcpy(event.prevKeyStates, event.keyStates, sizeof(event.prevKeyStates));
+        printf("");
     }
 
     return 0;

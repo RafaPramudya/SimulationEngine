@@ -53,13 +53,23 @@ void PrepareRenderer(void) {
     glViewport(0, 0, appstate.width, appstate.height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+    ShowCursor(FALSE);
     CameraInit();
 }
 
 void RenderEvent(void) {
-    if (IS_KEY_DOWN(event.keyStates, 'P')) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    static bool polygonFill = true;
+    static bool usingMouse = true;
 
+    if (IS_KEY_PRESSED('P')) {
+        if (polygonFill) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); polygonFill = !polygonFill; }
+        else { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); polygonFill = !polygonFill; }
+    }
+
+    if (IS_KEY_PRESSED(VK_F5)) {
+        usingMouse = !usingMouse;
+        CaptureMouse(usingMouse);
+    }
     CameraEvent();
 }
 
@@ -80,7 +90,7 @@ void RenderLoop(void) {
     glm_rotate(model, 75.0f * glm_rad(appstate.passedTime), (vec3){1.0f, 0.0f, 0.0f});
 
     getCameraView(&view);
-    
+
     glm_perspective(glm_rad(50.0f), (float)appstate.width / (float)appstate.height, 0.1f, 100.0f, projection);
 
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "model"), 1, GL_FALSE, model[0]);

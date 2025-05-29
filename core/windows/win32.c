@@ -4,8 +4,9 @@
 #include "event.h"
 
 #include "render/renderer.h"
+#include "render/camera.h"
 
-Event event;
+extern Event event;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -35,17 +36,44 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             return 0;
         case WM_ACTIVATE:
             event.isWindowActive = (LOWORD(wParam) != WA_INACTIVE);
-            if (!event.isWindowActive) memset(event.keyStates, 0, sizeof(event.keyStates));
+            if (!event.isWindowActive) {
+                memset(event.keyStates, 0, sizeof(event.keyStates));
+                memset(event.prevKeyStates, 0, sizeof(event.prevKeyStates));
+            }
             return 0;
         case WM_KILLFOCUS:
             memset(event.keyStates, 0, sizeof(event.keyStates));
+            memset(event.prevKeyStates, 0, sizeof(event.prevKeyStates));
             event.isWindowActive = false;
             return 0;
+        case WM_MOUSEMOVE:
+            if (event.mouseState.isCaptured) {
+                i32 newX = (int)(short)LOWORD(lParam);
+                i32 newY = (int)(short)HIWORD(lParam);
+                
+                // Calculate center of window
+                RECT rect;
+                GetClientRect(hwnd, &rect);
+                i32 centerX = (rect.right - rect.left) / 2;
+                i32 centerY = (rect.bottom - rect.top) / 2;
+                
+                // Calculate delta from center
+                event.mouseState.deltaX = newX - centerX;
+                event.mouseState.deltaY = newY - centerY;
+                
+                // Recenter mouse
+                POINT center = {centerX, centerY};
+                ClientToScreen(hwnd, &center);
+                SetCursorPos(center.x, center.y);
+
+                CameraMouseEvent();
+            }
+            return 0;
         case WM_KEYDOWN:
-            SET_KEY_STATE(event.keyStates, wParam, 1);
+            SET_KEY_STATE(wParam, 1);
             break;
         case WM_KEYUP:
-            SET_KEY_STATE(event.keyStates, wParam, 0);
+            SET_KEY_STATE(wParam, 0);
             break;
         }
         return DefWindowProc(hwnd, uMsg, wParam, lParam);

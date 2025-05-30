@@ -19,7 +19,7 @@ extern Event event;
 void PrepareRenderer(void) {
     compileProgram("assets/shader/basic.vert", "assets/shader/basic.frag", &renderstate.main_shader);
 
-    renderstate.ttsTexture = createTexture("assets/images/sunda.jpeg");
+    renderstate.ttsTexture = createTexture("assets/images/orang_jelek.jpg");
 
     glGenVertexArrays(1, &renderstate.VAO);
     glBindVertexArray(renderstate.VAO);
@@ -33,16 +33,12 @@ void PrepareRenderer(void) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadInds), quadInds, GL_STATIC_DRAW);
 
     // Lokasi Layout 0 vec3
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const void*)0);
     glEnableVertexAttribArray(0);
 
     // Lokasi Layout 1 vec3
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    // Lokasi Layout 2 vec2
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (const void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -52,6 +48,8 @@ void PrepareRenderer(void) {
 
     glViewport(0, 0, appstate.width, appstate.height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    glEnable(GL_DEPTH_TEST);
 
     ShowCursor(FALSE);
     CameraInit();
@@ -74,9 +72,9 @@ void RenderEvent(void) {
 }
 
 void RenderLoop(void) {
-    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     // glClearColor(0.53f, 0.81f, 0.92f, 1.0f); // Sky blue color
-    glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
+    // glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     Shader* mainShader = &renderstate.main_shader;

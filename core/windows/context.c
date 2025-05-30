@@ -2,6 +2,7 @@
 #include "appstate.h"
 #include "utils/types.h"
 
+
 #ifndef UNICODE
 #define UNICODE
 #endif

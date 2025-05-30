@@ -13,7 +13,7 @@ void CameraInit(void) {
     glm_vec3((vec3){0.0f, 0.0f, -1.0f}, camera.front);
     glm_vec3((vec3){0.0f, 1.0f, 0.0f}, camera.up);
 
-    camera.yaw = 0.0f;
+    camera.yaw = -90.0f;
     camera.pitch = 0.0f;
     camera.roll = 0.0f;
 }

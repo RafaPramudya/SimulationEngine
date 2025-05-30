@@ -13,6 +13,7 @@
 
 // Global variable for renderstate
 RenderState renderstate;
+extern Camera camera;
 extern AppState appstate;
 extern Event event;
 
@@ -85,13 +86,14 @@ void RenderLoop(void) {
 
     mat4 model;
     glm_mat4_identity(model);
-    glm_rotate(model, 75.0f * glm_rad(appstate.passedTime), (vec3){1.0f, 0.0f, 0.0f});
+    glm_rotate(model, 5.0f * glm_rad(appstate.passedTime), (vec3){1.0f, 0.0f, 0.0f});
 
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "model"), 1, GL_FALSE, model[0]);
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "view"), 1, GL_FALSE, view[0]);
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "projection"), 1, GL_FALSE, projection[0]);
     glUniform3fv(glGetUniformLocation(mainShader->pId, "lightCol"), 1, lightColor);
     glUniform3fv(glGetUniformLocation(mainShader->pId, "lightPos"), 1, lightPos);
+    glUniform3fv(glGetUniformLocation(mainShader->pId, "viewPos"), 1, camera.position);
 
     glActiveTexture(GL_TEXTURE0); 
     glBindTexture(GL_TEXTURE_2D, renderstate.ttsTexture.id);

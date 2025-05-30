@@ -7,8 +7,10 @@
 #include "globject.h"
 typedef struct RenderState_s {
     GLObj basic;
+    GLObj light;
 
     Shader main_shader;
+    Shader light_shader;
 
     Texture ttsTexture;
 } RenderState;

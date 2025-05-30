@@ -18,14 +18,19 @@ extern Event event;
 
 void PrepareRenderer(void) {
     compileProgram("assets/shader/basic.vert", "assets/shader/basic.frag", &renderstate.main_shader);
+    compileProgram("assets/shader/light.vert", "assets/shader/light.frag", &renderstate.light_shader);
 
     renderstate.ttsTexture = createTexture("assets/images/orang_jelek.jpg");
 
     createGLObject(&renderstate.basic, quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds));
-
     startsVertsAttribs();
     addVertsAttrib(3);
     addVertsAttrib(2);
+    compileVertsAttrib();
+
+    createGLObject(&renderstate.light, quadLightVerts, sizeof(quadLightVerts), quadInds, sizeof(quadInds));
+    startsVertsAttribs();
+    addVertsAttrib(3);
     compileVertsAttrib();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -65,29 +70,47 @@ void RenderLoop(void) {
     // glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    vec3 lightColor = {1.0f, 0.95f, 0.8f}; // sunlight color (warm white)
+
+    mat4 view;
+    mat4 projection;
+    getCameraView(&view);
+    glm_perspective(glm_rad(50.0f), (float)appstate.width / (float)appstate.height, 0.1f, 100.0f, projection);
+
     Shader* mainShader = &renderstate.main_shader;
+    Shader* lightShader = &renderstate.light_shader;
     glUseProgram(mainShader->pId);
 
     mat4 model;
-    mat4 view;
-    mat4 projection;
-
     glm_mat4_identity(model);
     glm_rotate(model, 75.0f * glm_rad(appstate.passedTime), (vec3){1.0f, 0.0f, 0.0f});
-
-    getCameraView(&view);
-
-    glm_perspective(glm_rad(50.0f), (float)appstate.width / (float)appstate.height, 0.1f, 100.0f, projection);
 
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "model"), 1, GL_FALSE, model[0]);
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "view"), 1, GL_FALSE, view[0]);
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "projection"), 1, GL_FALSE, projection[0]);
+    glUniform3fv(glGetUniformLocation(mainShader->pId, "lightCol"), 1, lightColor);
 
     glActiveTexture(GL_TEXTURE0); 
     glBindTexture(GL_TEXTURE_2D, renderstate.ttsTexture.id);
 
     glBindVertexArray(renderstate.basic.VAO);
     glDrawElements(GL_TRIANGLES, sizeof(quadInds) / sizeof(*quadInds), GL_UNSIGNED_INT, 0);
+
+    glUseProgram(lightShader->pId);
+
+    mat4 lightModel;
+    glm_mat4_identity(lightModel);
+    glm_translate(lightModel, (vec3){2.0f, 1.0f, 1.5f});
+    glm_scale(lightModel, (vec3){0.5, 0.5, 0.5});
+
+    glUniformMatrix4fv(glGetUniformLocation(lightShader->pId, "model"), 1, GL_FALSE, lightModel[0]);
+    glUniformMatrix4fv(glGetUniformLocation(lightShader->pId, "view"), 1, GL_FALSE, view[0]);
+    glUniformMatrix4fv(glGetUniformLocation(lightShader->pId, "projection"), 1, GL_FALSE, projection[0]);
+    glUniform3fv(glGetUniformLocation(lightShader->pId, "lightCol"), 1, lightColor);
+
+    glBindVertexArray(renderstate.light.VAO);
+    glDrawElements(GL_TRIANGLES, sizeof(quadInds) / sizeof(*quadInds), GL_UNSIGNED_INT, 0);
+
     glBindVertexArray(0);
 
     SwapBuffers(appstate.hdc);

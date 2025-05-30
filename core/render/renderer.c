@@ -21,24 +21,12 @@ void PrepareRenderer(void) {
 
     renderstate.ttsTexture = createTexture("assets/images/orang_jelek.jpg");
 
-    glGenVertexArrays(1, &renderstate.VAO);
-    glBindVertexArray(renderstate.VAO);
+    createGLObject(&renderstate.basic, quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds));
 
-    glGenBuffers(1, &renderstate.VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, renderstate.VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVerts), quadVerts, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &renderstate.EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderstate.EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadInds), quadInds, GL_STATIC_DRAW);
-
-    // Lokasi Layout 0 vec3
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Lokasi Layout 1 vec3
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    startsVertsAttribs();
+    addVertsAttrib(3);
+    addVertsAttrib(2);
+    compileVertsAttrib();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -98,7 +86,7 @@ void RenderLoop(void) {
     glActiveTexture(GL_TEXTURE0); 
     glBindTexture(GL_TEXTURE_2D, renderstate.ttsTexture.id);
 
-    glBindVertexArray(renderstate.VAO);
+    glBindVertexArray(renderstate.basic.VAO);
     glDrawElements(GL_TRIANGLES, sizeof(quadInds) / sizeof(*quadInds), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 

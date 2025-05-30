@@ -4,11 +4,9 @@
 #include "utils/types.h"
 #include "shader.h"
 #include "texture.h"
-
+#include "globject.h"
 typedef struct RenderState_s {
-    u32 VAO;
-    u32 VBO;
-    u32 EBO;
+    GLObj basic;
 
     Shader main_shader;
 

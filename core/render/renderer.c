@@ -26,6 +26,7 @@ void PrepareRenderer(void) {
     startsVertsAttribs();
     addVertsAttrib(3);
     addVertsAttrib(2);
+    addVertsAttrib(3);
     compileVertsAttrib();
 
     createGLObject(&renderstate.light, quadLightVerts, sizeof(quadLightVerts), quadInds, sizeof(quadInds));
@@ -71,6 +72,7 @@ void RenderLoop(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     vec3 lightColor = {1.0f, 0.95f, 0.8f}; // sunlight color (warm white)
+    vec3 lightPos = {2.0f, 1.0f, 1.5f};
 
     mat4 view;
     mat4 projection;
@@ -89,6 +91,7 @@ void RenderLoop(void) {
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "view"), 1, GL_FALSE, view[0]);
     glUniformMatrix4fv(glGetUniformLocation(mainShader->pId, "projection"), 1, GL_FALSE, projection[0]);
     glUniform3fv(glGetUniformLocation(mainShader->pId, "lightCol"), 1, lightColor);
+    glUniform3fv(glGetUniformLocation(mainShader->pId, "lightPos"), 1, lightPos);
 
     glActiveTexture(GL_TEXTURE0); 
     glBindTexture(GL_TEXTURE_2D, renderstate.ttsTexture.id);
@@ -100,7 +103,7 @@ void RenderLoop(void) {
 
     mat4 lightModel;
     glm_mat4_identity(lightModel);
-    glm_translate(lightModel, (vec3){2.0f, 1.0f, 1.5f});
+    glm_translate(lightModel, lightPos);
     glm_scale(lightModel, (vec3){0.5, 0.5, 0.5});
 
     glUniformMatrix4fv(glGetUniformLocation(lightShader->pId, "model"), 1, GL_FALSE, lightModel[0]);

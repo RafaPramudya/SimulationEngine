@@ -2,16 +2,33 @@
 #define SHADER_H
 
 #include "utils/types.h"
-
-typedef struct Shader_s {
-    u32 pId;
-} Shader;
+#include <glm/glm.hpp>
 
 typedef unsigned int GLenum;
+class Shader {
+public:
+    Shader(GLenum type, const char* filename);
+    ~Shader();
 
-u32 compileShader(GLenum type, const char* source);
-void compileProgram(const char* vertexFilename, const char* fragmentFilename, Shader* shader);
+    friend class ShaderProg;
+private:
+    u32 id;
+};
 
-void freeShader(Shader shader);
+class ShaderProg {
+public:
+    ShaderProg();
+    ~ShaderProg();
+
+    void use();
+
+    void setUniform(const char* location, glm::mat4& matrix);
+    void setUniform(const char* location, glm::vec3& vector);
+
+    void attachShader(Shader& shader);
+    void linkProgram();
+private:
+    u32 pId;
+};
 
 #endif // SHADER_H

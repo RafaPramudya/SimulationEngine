@@ -2,20 +2,33 @@
 #define CAMERA_H
 
 #include "utils/types.h"
-#include "cglm/cglm.h"
+#include <glm/glm.hpp>
 
-typedef struct Camera
-{
-    vec3 position;
-    vec3 front;
-    vec3 up;
+class Camera {
+public:
+    Camera() : 
+        position(0.0f, 0.0f, 3.0f),
+        front(0.0f, 0.0f, -1.0f),
+        yaw(-90.0f), pitch(0.0f), roll(0.0f)
+    {};
+    ~Camera() = default;
+
+    void update();
+    void mouseEvent();
+
+    glm::mat4 getView();
+
+    glm::vec3& getPos() { return position; }
+    glm::vec3& getFront() { return front; }
+    glm::vec3& getUp() { return up; }
+private:
+    glm::vec3 position;
+    glm::vec3 front;
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
     f32 yaw, pitch, roll;
-} Camera;
+};
 
-void CameraInit(void);
-void CameraEvent(void);
-void CameraMouseEvent(void);
-void getCameraView(mat4* view_out);
+extern Camera* camera;
 
 #endif // CAMERA_H

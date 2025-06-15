@@ -2,7 +2,6 @@
 #include "appstate.h"
 #include "utils/types.h"
 
-
 #ifndef UNICODE
 #define UNICODE
 #endif
@@ -11,15 +10,13 @@
 #define WIN_32_EXTRA_LEAN
 #include <Windows.h>
 #include <wchar.h>
-#include <assert.h>
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 #include "glad/glad.h"
 #include "glad/glad_wgl.h"
 
-extern AppState appstate;
-
-void context_init(void) {
+void Context::init() {
     PIXELFORMATDESCRIPTOR pfd;
     memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
     pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
@@ -30,14 +27,14 @@ void context_init(void) {
     pfd.cDepthBits = 32;
     pfd.cStencilBits = 8;
 
-    i32 pixelFormat = ChoosePixelFormat(appstate.hdc, &pfd);
-    SetPixelFormat(appstate.hdc, pixelFormat, &pfd);
+    i32 pixelFormat = ChoosePixelFormat(state->getHDC(), &pfd);
+    SetPixelFormat(state->getHDC(), pixelFormat, &pfd);
 
-    HGLRC tempRC = wglCreateContext(appstate.hdc);
-    wglMakeCurrent(appstate.hdc, tempRC);
+    HGLRC tempRC = wglCreateContext(state->getHDC());
+    wglMakeCurrent(state->getHDC(), tempRC);
 
     assert(gladLoadGL());
-    assert(gladLoadWGL(appstate.hdc));
+    assert(gladLoadWGL(state->getHDC()));
 
     const i32 attribList[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
@@ -47,11 +44,11 @@ void context_init(void) {
         WGL_CONTEXT_CORE_PROFILE_BIT_ARB, 0
     };
 
-    HGLRC hglrc = wglCreateContextAttribsARB(appstate.hdc, 0, attribList);
-    appstate.hglrc = hglrc;
+    HGLRC hglrc = wglCreateContextAttribsARB(state->getHDC(), 0, attribList);
+    state->getHGLRC() = hglrc;
     wglMakeCurrent(NULL,NULL);
     wglDeleteContext(tempRC);
-    wglMakeCurrent(appstate.hdc, appstate.hglrc);
+    wglMakeCurrent(state->getHDC(), state->getHGLRC());
 
     #ifdef DEBUG
     printf("OpenGL Berhasil diload\n");
@@ -77,8 +74,8 @@ void context_init(void) {
     }
 }
 
-void context_destroy(void) {
+void Context::destroy() {
     wglMakeCurrent(NULL, NULL);
-    wglDeleteContext(appstate.hglrc);
-    ReleaseDC(appstate.hwnd, appstate.hdc);
+    wglDeleteContext(state->getHGLRC());
+    ReleaseDC(state->getHWND(), state->getHDC());
 }

@@ -34,22 +34,18 @@ add_definitions(
 project(Engine VERSION 0.0.1)
 
 find_package(OpenGL REQUIRED)
+add_subdirectory(glm)
 
 # Ensure the main.c file is included in the SRC_FILE list
 file(GLOB_RECURSE SRC_FILE CONFIGURE_DEPENDS 
-    core/*.c
     core/*.cpp
-    core/windows/*.c
     core/windows/*.cpp
-    core/utils/*.c
     core/utils/*.cpp
-    core/render/*.c
     core/render/*.cpp
-    core/main.c  # Explicitly include main.c
+    core/main.cpp  # Explicitly include main.c
 )
 
 set(CGLM_STATIC ON)
-add_subdirectory(cglm EXCLUDE_FROM_ALL)
 
 # Set the linker subsystem to WINDOWS for Windows native applications
 if (WIN32 AND MSVC)
@@ -71,4 +67,4 @@ target_include_directories(${EXECUTABLE_NAME} PUBLIC
 )
 target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_17)
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GL cglm_headers)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GL glm::glm)

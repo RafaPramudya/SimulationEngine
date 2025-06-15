@@ -5,21 +5,30 @@
 #include "shader.h"
 #include "texture.h"
 #include "globject.h"
-typedef struct RenderState_s {
-    GLObj basic;
-    GLObj light;
 
-    Shader main_shader;
-    Shader light_shader;
+#include <optional>
 
-    Texture ttsTexture;
-} RenderState;
+class Renderer {
+public:
+    Renderer();
+    ~Renderer() = default;
 
-void PrepareRenderer(void);
-void RendererResize(u32 width, u32 height);
-void RenderLoop(void);
-void QuitRenderer(void);
+    void renderEvent();
+    void render();
 
-void RenderEvent(void);
+    void resize(u32 width, u32 height);
+private:
+    ShaderProg main_prog;
+    ShaderProg light_prog;
+
+    // Texture
+    std::optional<Texture> tts;
+
+    // Object Section
+    std::optional<Object> basic;
+    std::optional<Object> light;
+};
+
+extern Renderer* renderer;
 
 #endif

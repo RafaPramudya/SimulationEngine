@@ -1,7 +1,14 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
-void context_init(void);
-void context_destroy(void);
+class Context {
+public:
+    Context() = default;
+    ~Context() = default;
+
+    static void init(void);
+    static void destroy(void);
+};
+
 
 #endif

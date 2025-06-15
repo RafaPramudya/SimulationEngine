@@ -6,8 +6,6 @@
 #include "render/renderer.h"
 #include "render/camera.h"
 
-extern Event event;
-
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_CLOSE:
@@ -18,13 +16,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
             return 0;
         case WM_DESTROY:
-            context_destroy();
+            Context::destroy();
             PostQuitMessage(0);
             return 0;
         case WM_SIZE:
-            WORD width = LOWORD(lParam);
-            WORD height = HIWORD(lParam);
-            RendererResize(width, height);
+            {
+                WORD width = LOWORD(lParam);
+                WORD height = HIWORD(lParam);
+                if(renderer) renderer->resize(width, height);
+                if(state) state->resize(width, height);
+            }
             return 0;
         case WM_PAINT:
             {
@@ -35,19 +36,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
             return 0;
         case WM_ACTIVATE:
-            event.isWindowActive = (LOWORD(wParam) != WA_INACTIVE);
-            if (!event.isWindowActive) {
-                memset(event.keyStates, 0, sizeof(event.keyStates));
-                memset(event.prevKeyStates, 0, sizeof(event.prevKeyStates));
+            event->setWindowActive((LOWORD(wParam) != WA_INACTIVE));
+            if (!event->isWindowActive()) {
+                event->clearKeyBuffer();
             }
             return 0;
         case WM_KILLFOCUS:
-            memset(event.keyStates, 0, sizeof(event.keyStates));
-            memset(event.prevKeyStates, 0, sizeof(event.prevKeyStates));
-            event.isWindowActive = false;
+            event->clearKeyBuffer();
+            event->setWindowActive(false);
             return 0;
         case WM_MOUSEMOVE:
-            if (event.mouseState.isCaptured) {
+            if (event->mouseState.isCaptured()) {
                 i32 newX = (int)(short)LOWORD(lParam);
                 i32 newY = (int)(short)HIWORD(lParam);
                 
@@ -58,22 +57,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 i32 centerY = (rect.bottom - rect.top) / 2;
                 
                 // Calculate delta from center
-                event.mouseState.deltaX = newX - centerX;
-                event.mouseState.deltaY = newY - centerY;
+                event->mouseState.deltaX = newX - centerX;
+                event->mouseState.deltaY = newY - centerY;
                 
                 // Recenter mouse
                 POINT center = {centerX, centerY};
                 ClientToScreen(hwnd, &center);
                 SetCursorPos(center.x, center.y);
 
-                CameraMouseEvent();
+                camera->mouseEvent();
             }
             return 0;
         case WM_KEYDOWN:
-            SET_KEY_STATE(wParam, 1);
+            event->setKeyDown(wParam, true);
             break;
         case WM_KEYUP:
-            SET_KEY_STATE(wParam, 0);
+        
+            event->setKeyDown(wParam, false);
             break;
         }
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -127,10 +127,6 @@ BOOL InitializeWindow(HWND* _outWndHandle, HINSTANCE hInstance, int nCmdShow, u3
     if (hwnd == NULL) {
         return FALSE;
     }
-
-    appState_init(hwnd, hdc, w_width, w_height);
-
-    context_init();
 
     *_outWndHandle = hwnd;
     ShowWindow(hwnd, nCmdShow);

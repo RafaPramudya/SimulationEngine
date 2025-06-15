@@ -10,49 +10,58 @@
 
 #include "utils/types.h"
 
-#include <stdio.h>
+#include <cstdio>
+#include <bitset>
 
-// 256 key for 8 bits per byte
-#define KEY_ARRAY_SIZE 32
+#ifdef __cplusplus
 
-#define SET_KEY_STATE(vkCode, isDown) \
-    if (vkCode < 256) { \
-        int byteIdx = vkCode / 0x8; \
-        int bitIdx = vkCode % 0x8; \
-        if (isDown) event.keyStates[byteIdx] |= (1 << bitIdx); \
-        else event.keyStates[byteIdx] &= ~(1 << bitIdx); \
-    }
-#define IS_KEY_DOWN(vkCode) \
-    ((vkCode < 256) ? (event.keyStates[vkCode / 0x8] & (1 << (vkCode % 0x8))) != 0 : 0)
-#define IS_KEY_PRESSED(vkCode) \
-    ((vkCode < 256) && ((event.keyStates[vkCode / 8] & (1 << (vkCode % 8))) && !((event.prevKeyStates[vkCode / 8] & (1 << (vkCode % 8))))))
-#define IS_KEY_RELEASED(vkCode) \
-    ((vkCode < 256) && !((event.keyStates[vkCode / 8] & (1 << (vkCode % 8))) && ((event.prevKeyStates[vkCode / 8] & (1 << (vkCode % 8))))))
-
-#define TOGGLE_SWITCH_ON_PRESS(vkCode) \
-    if (IS_KEY_PRESSED(vkCode)) { \
-        int byteIdx = vkCode / 8; \
-        int bitIdx = vkCode % 8; \
-        event.keySwitches[byteIdx] ^= (1 << bitIdx); \
-    } \
-
-#define IS_SWITCH_ON(vkCode) \
-    ((vkCode < 256) ? (event.keySwitches[vkCode / 8] & (1 << (vkCode % 8))) != 0 : 0)
-
-typedef struct MouseState {
-    bool isCaptured;
+class MouseState {
+    private:
+    bool captured;
+    public:
     i32 deltaX, deltaY;
-} MouseState;
-typedef struct Event {
-    u8 keyStates[KEY_ARRAY_SIZE];
-    u8 keySwitches[KEY_ARRAY_SIZE];
-    u8 prevKeyStates[KEY_ARRAY_SIZE];
 
-    bool isWindowActive;
+    MouseState() = default;
+    ~MouseState() = default;
+
+    bool isCaptured() { return captured; }
+    void setCaptured(bool status) { captured = status; }
+};
+
+class Event {
+private:
+    std::bitset<256> keyState;
+    std::bitset<256> prevKeyState;
+
+    bool windowActive;
+public:
+    static Event& instance() {
+        static Event instance;
+        return instance;
+    }    
+    Event();
+    ~Event() = default;
+
     MouseState mouseState;
-} Event;
 
-void EventInit(void);
-void CaptureMouse(bool captured);
+    void captureMouse(bool captured);
 
+    void setKeyDown(u32 vkCode, bool isDown);
+    bool isKeyDown(u32 vkCode) const;
+    bool isKeyPressed(u32 vkCode) const;
+    bool isKeyReleased(u32 vkCode) const;
+
+    void swapKeyBuffer();
+    inline void clearKeyBuffer() {
+        keyState.reset();
+        prevKeyState.reset();
+    }
+
+    bool isWindowActive(void) const { return windowActive; }
+    void setWindowActive(bool status) { windowActive = status; }    
+};
+
+extern Event* event;
+
+#endif
 #endif

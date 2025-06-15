@@ -1,8 +1,8 @@
 #include "importer.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
 
 #define MIN_SIZE_BUFFER 0x100
 #define MAX_INC_BUFFER 0x400000
@@ -25,13 +25,13 @@ char* getContentFromFile(const char* filename) {
         if (total >= allocated) {
             if (increase >= MAX_INC_BUFFER) increase = MAX_INC_BUFFER;
             allocated += increase;
-            string = realloc(string, allocated);
+            string = (char*)realloc(string, allocated);
             increase <<= 2;
         }
     }
     assert(!ferror(buffer));
 
-    string = realloc(string, total);
+    string = (char*)realloc(string, total);
     string[total - 1] = '\0';
 
     fclose(buffer);

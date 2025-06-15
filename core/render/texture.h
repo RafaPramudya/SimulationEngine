@@ -3,11 +3,16 @@
 
 #include "utils/types.h"
 
-typedef struct Texture_s {
-    u32 id;
-} Texture;
+class Texture {
+public:
+    Texture() = default;
+    Texture(const char* imageName);
+    ~Texture();
 
-Texture createTexture(const char* imageName);
-void freeTexture(Texture tex);
+    void bind();
+    inline u32 getId() const { return id; }
+private:
+    u32 id;
+};
 
 #endif

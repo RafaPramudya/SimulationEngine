@@ -1,4 +1,4 @@
-#include "globject.h"
+#include "object.h"
 
 #include "glad/glad.h"
 

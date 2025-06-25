@@ -4,7 +4,8 @@
 #include "utils/types.h"
 #include "shader.h"
 #include "texture.h"
-#include "globject.h"
+#include "object.h"
+#include "light.h"
 
 #include <optional>
 
@@ -26,7 +27,7 @@ private:
 
     // Object Section
     std::optional<Object> basic;
-    std::optional<Object> light;
+    std::optional<Light> light;
 };
 
 extern Renderer* renderer;

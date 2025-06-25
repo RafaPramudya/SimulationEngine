@@ -40,11 +40,13 @@ Renderer::Renderer() {
     basic->addAttribute(3);
     basic->compileAttribute();
 
-    // createGLObject(&renderstate.light, quadLightVerts, sizeof(quadLightVerts), quadInds, sizeof(quadInds));
-    // startsVertsAttribs();
-    // addVertsAttrib(3);
-    // compileVertsAttrib();
-    light.emplace(quadLightVerts, sizeof(quadLightVerts), quadInds, sizeof(quadInds));
+    light.emplace("light", quadLightVerts, sizeof(quadLightVerts), quadInds, sizeof(quadInds));
+    light->setLight(1.0, 0.09, 0.032, glm::vec3(1.0f, 0.95f, 0.8f));
+    // vec3 lightColor = {1.0f, 0.95f, 0.8f}; // sunlight color (warm white)
+    // vec3 lightPos = {2.0f, 1.0f, 1.5f};
+    // glm::vec3 lightColor(1.0f, 0.95f, 0.8f); // sunlight color (warm white)
+    light->transform.translate(glm::vec3(2.0f, 1.0f, 1.5f));
+    light->transform.scale(glm::vec3(0.5, 1.0, 0.25));
     light->addAttribute(3);
     light->compileAttribute();
 
@@ -84,26 +86,19 @@ void Renderer::render() {
     // glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    // vec3 lightColor = {1.0f, 0.95f, 0.8f}; // sunlight color (warm white)
-    // vec3 lightPos = {2.0f, 1.0f, 1.5f};
-    glm::vec3 lightColor(1.0f, 0.95f, 0.8f); // sunlight color (warm white)
-    glm::vec3 lightPos(2.0f, 1.0f, 1.5f);
-
     glm::mat4 view = camera->getView();
     glm::mat4 projection = glm::perspective(glm::radians(50.0f), (float)state->getWidth() / (float)state->getHeight(), 0.1f, 100.0f);
 
     // Shader* lightShader = &renderstate.light_shader;
     main_prog.use();
-
-    glm::mat4 model(1.0f);
-    // glm_rotate(model, 5.0f * glm_rad(state.passedTime), (vec3){1.0f, 0.0f, 0.0f});
-    model = glm::rotate(model, 5.0f * (float)glm::radians(state->passedTime), glm::vec3(1.0f, 0.0f, 0.0f));
+    auto model = basic->transform.getMatrix();
 
     main_prog.setUniform("model", model);
     main_prog.setUniform("view", view);
     main_prog.setUniform("projection", projection);
-    main_prog.setUniform("lightCol", lightColor);
-    main_prog.setUniform("lightPos", lightPos);
+    // main_prog.setUniform("lightCol", lightColor);
+    // main_prog.setUniform("lightPos", lightPos);
+    main_prog.setUniform(light.value());
     main_prog.setUniform("viewPos", camera->getPos());
 
     glActiveTexture(GL_TEXTURE0); 
@@ -119,14 +114,12 @@ void Renderer::render() {
     // glm_translate(lightModel, lightPos);
     // glm_scale(lightModel, (vec3){0.5, 0.5, 0.5});
 
-    glm::mat4 lightModel(1.0f);
-    lightModel = glm::translate(lightModel, lightPos);
-    lightModel = glm::scale(lightModel, glm::vec3(0.5));
+    model = light->transform.getMatrix();
 
-    light_prog.setUniform("model", lightModel);
+    light_prog.setUniform("model", model);
     light_prog.setUniform("view", view);
     light_prog.setUniform("projection", projection);
-    light_prog.setUniform("lightCol", lightColor);
+    light_prog.setUniform("color", light->getColor());
 
     glBindVertexArray(light->getVAO());
     glDrawElements(GL_TRIANGLES, sizeof(quadInds) / sizeof(*quadInds), GL_UNSIGNED_INT, 0);

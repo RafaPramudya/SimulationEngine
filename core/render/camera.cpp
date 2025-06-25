@@ -8,7 +8,7 @@
 Camera* camera = nullptr;
 
 void Camera::update() {
-    const f32 baseSpeed = event->isKeyDown(VK_CONTROL) ? 5.0f : 2.5f;
+    const f32 baseSpeed = event->isKeyDown(VK_CONTROL) ? 3.0f : 1.5f;
     const f32 velocity = baseSpeed * state->deltaTime;
 
     if (event->isKeyDown('W')) {

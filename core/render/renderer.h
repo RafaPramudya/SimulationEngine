@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "texture.h"
 #include "object.h"
+#include "model.h"
 #include "light.h"
 
 #include <optional>
@@ -22,11 +23,8 @@ private:
     ShaderProg main_prog;
     ShaderProg light_prog;
 
-    // Texture
-    std::optional<Texture> tts;
-
     // Object Section
-    std::optional<Object> basic;
+    std::optional<Model> basic;
     std::optional<Light> light;
 };
 

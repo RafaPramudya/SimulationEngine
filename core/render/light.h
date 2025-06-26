@@ -2,7 +2,7 @@
 #define LIGHT_H
 
 #include "utils/types.h"
-#include "object.h"
+#include "model.h"
 
 #include <glm/glm.hpp>
 
@@ -12,7 +12,7 @@ typedef struct Attenuation {
     f32 quadratic;
 } Attenuation;
 
-class Light : public Object
+class Light : public Model
 {
 private:
     Attenuation attenuation;
@@ -20,7 +20,7 @@ private:
     const char* name;
 public:
     Light(const char* name, f32* lpverts, size_t vertsSz, u32* lpinds, size_t indsSz) 
-        : Object(lpverts, vertsSz, lpinds, indsSz) { Light::name = name; }
+        : Model(lpverts, vertsSz, lpinds, indsSz) { Light::name = name; }
     ~Light() = default;
 
     inline const char* getName() const {return name;}

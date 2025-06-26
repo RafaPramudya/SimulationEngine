@@ -6,14 +6,17 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture(const char* imageName) {
-    stbi_set_flip_vertically_on_load(true);
+Texture::Texture(std::string imageName, TextureType type, bool flip) {
+    Texture::path = imageName;
+    Texture::type = type;
+
+    stbi_set_flip_vertically_on_load(flip);
     
     i32 width, height, nrChannels;
-    unsigned char* data = stbi_load(imageName, &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load(imageName.c_str(), &width, &height, &nrChannels, 0);
     
     #ifdef DEBUG
-    printf("Loading gambar : %s, width : %d, height : %d, nrChannels : %d\n", imageName,width, height, nrChannels);
+    printf("Loading gambar : %s, width : %d, height : %d, nrChannels : %d\n", imageName.c_str(),width, height, nrChannels);
     #endif
     assert(data);
 

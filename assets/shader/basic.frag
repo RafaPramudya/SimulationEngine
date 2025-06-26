@@ -15,7 +15,7 @@ in vec2 mTexCoord;
 in vec3 mNormal;
 in vec3 mFragPos;
 
-uniform sampler2D uTexture;
+uniform sampler2D diffuse0;
 uniform Light light;
 uniform vec3 viewPos;
 
@@ -44,7 +44,7 @@ void specularShader(out vec3 specular) {
 }
 
 void main() {
-    vec4 objColor = texture(uTexture, mTexCoord);
+    vec4 objColor = texture(diffuse0, mTexCoord);
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;

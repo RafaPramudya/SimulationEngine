@@ -3,14 +3,24 @@
 
 #include "utils/types.h"
 
+#include <string>
+
+enum TextureType {
+    DIFFUSE,
+    INVALID
+};
+
 class Texture {
 public:
     Texture() = default;
-    Texture(const char* imageName);
+    Texture(std::string imageName, TextureType type, bool flip = true);
     ~Texture();
 
     void bind();
     inline u32 getId() const { return id; }
+
+    TextureType type;
+    std::string path;
 private:
     u32 id;
 };

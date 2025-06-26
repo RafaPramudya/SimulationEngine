@@ -22,6 +22,7 @@ public:
     ~ShaderProg();
 
     void use();
+    u32 getPId() { return pId; }
 
     void setUniform(const char* location, f32 value);
     void setUniform(const char* location, glm::mat4& matrix);

@@ -24,6 +24,7 @@ void Event::captureMouse(bool captured) {
         };
         ClientToScreen(state->getHWND(), &center);
         SetCursorPos(center.x, center.y);
+        ShowCursor(FALSE);
     } else  {
         ShowCursor(TRUE);
         ReleaseCapture();

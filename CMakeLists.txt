@@ -34,6 +34,22 @@ add_definitions(
 project(Engine VERSION 0.0.1)
 
 find_package(OpenGL REQUIRED)
+
+# add_library(Assimp STATIC IMPORTED)
+# set_target_properties(Assimp PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/lib/assimp/assimp-vc143-mt.lib")
+
+# include(FetchContent)
+# set(FETCHCONTENT_BASE_DIR ${PROJECT_SOURCE_DIR}/libs CACHE PATH "Missing description." FORCE)
+# FetchContent_Declare(assimp
+# GIT_REPOSITORY https://github.com/assimp/assimp.git
+# GIT_TAG master)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+# FetchContent_MakeAvailable(assimp)
+
+add_subdirectory(assimp)
 add_subdirectory(glm)
 
 # Ensure the main.c file is included in the SRC_FILE list
@@ -63,8 +79,16 @@ endif()
 target_include_directories(${EXECUTABLE_NAME} PUBLIC
     core
     lib/glad/include
+    libs/assimp-src/include
     lib
 )
 target_compile_features(${EXECUTABLE_NAME} PUBLIC c_std_17)
 target_compile_features(${EXECUTABLE_NAME} PUBLIC cxx_std_23)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GL glm::glm)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GL glm::glm assimp)
+
+# add_custom_command(
+#     TARGET Engine POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#     "${CMAKE_CURRENT_SOURCE_DIR}/lib/assimp/assimp-vc143-mt.dll"
+#     "$<TARGET_FILE_DIR:Engine>"
+# )

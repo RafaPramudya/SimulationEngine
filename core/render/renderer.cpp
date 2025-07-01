@@ -3,6 +3,9 @@
 #include "experiment.h"
 #include "windows/appstate.h"
 #include "windows/event.h"
+#include "component/transform.h"
+#include "component/render.h"
+#include "component/light.h"
 
 #include "glad/glad.h"
 #include "glad/glad_wgl.h"
@@ -15,9 +18,10 @@
 // Global variable for renderstate
 Renderer* renderer = nullptr;
 
+auto& planet (eManager.addEntity());
+auto& wakakak (eManager.addEntity());
+
 Renderer::Renderer() {
-    // compileProgram("assets/shader/basic.vert", "assets/shader/basic.frag", &renderstate.main_shader);
-    // compileProgram("assets/shader/light.vert", "assets/shader/light.frag", &renderstate.light_shader);
 
     Shader basic_vrt(GL_VERTEX_SHADER, "assets/shader/basic.vert");
     Shader basic_frg(GL_FRAGMENT_SHADER, "assets/shader/basic.frag");
@@ -33,15 +37,22 @@ Renderer::Renderer() {
 
     // basic.emplace(quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds));
     // basic->addTextureFirstMesh("assets/images/orang_jelek.jpg", TextureType::DIFFUSE);
-    basic.emplace("assets/model/wop.gltf");
+    // basic.emplace("assets/model/wop.gltf");
+    planet.addComponent<Transform>();
+    planet.addComponent<Render>("assets/model/wop.gltf", &main_prog);
 
-    light.emplace("light", quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds));
-    light->setLight(1.0, 0.09, 0.032, glm::vec3(1.0f, 0.95f, 0.8f));
+    // light.emplace("light", quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds));
+    // light->setLight(1.0, 0.09, 0.032, glm::vec3(1.0f, 0.95f, 0.8f));
+    auto& lightTransform = wakakak.addComponent<Transform>();
+    wakakak.addComponent<Render>(quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds), &light_prog);
+    auto& lightComponent = wakakak.addComponent<Light>("light");
+    lightComponent.setLight(1.0, 0.09, 0.032, glm::vec3(0.5f));
+
     // vec3 lightColor = {1.0f, 0.95f, 0.8f}; // sunlight color (warm white)
     // vec3 lightPos = {2.0f, 1.0f, 1.5f};
     // glm::vec3 lightColor(1.0f, 0.95f, 0.8f); // sunlight color (warm white)
-    light->transform.translate(glm::vec3(2.0f, 1.0f, 1.5f));
-    light->transform.scale(glm::vec3(0.5, 1.0, 0.25));
+    lightTransform.translate(glm::vec3(2.0f, 1.0f, 1.5f));
+    lightTransform.scale(glm::vec3(0.5, 1.0, 0.25));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -57,7 +68,7 @@ Renderer::Renderer() {
     ShowCursor(FALSE);
 }
 
-void Renderer::renderEvent() {
+void Renderer::renderEventUpdate() {
     static bool polygonFill = true;
     static bool usingMouse = true;
 
@@ -70,7 +81,10 @@ void Renderer::renderEvent() {
         usingMouse = !usingMouse;
         event->captureMouse(usingMouse);
     }
+    
+    // planet.getComponent<Transform>().rotate(90 * state->deltaTime, glm::vec3(0, 1, 0));
     camera->update();
+    eManager.update();
 }
 
 void Renderer::render() {
@@ -78,34 +92,8 @@ void Renderer::render() {
     // glClearColor(0.53f, 0.81f, 0.92f, 1.0f); // Sky blue color
     glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    glm::mat4 view = camera->getView();
-    glm::mat4 projection = glm::perspective(glm::radians(50.0f), (float)state->getWidth() / (float)state->getHeight(), 0.1f, 100.0f);
-
-    basic->transform.rotate(90 * state->deltaTime, glm::vec3(0, 1, 0));
-
-    main_prog.use();
-    auto model = basic->transform.getMatrix();
-    // auto model = glm::mat4(1.0f);
-
-    main_prog.setUniform("model", model);
-    main_prog.setUniform("view", view);
-    main_prog.setUniform("projection", projection);
-    main_prog.setUniform(light.value());
-    main_prog.setUniform("viewPos", camera->getPos());
-    
-    basic->draw(main_prog.getPId());
-
-    light_prog.use();
-
-    model = light->transform.getMatrix();
-
-    light_prog.setUniform("model", model);
-    light_prog.setUniform("view", view);
-    light_prog.setUniform("projection", projection);
-    light_prog.setUniform("color", light->getColor());
-
-    light->draw(light_prog.getPId());
+    eManager.render();
+    eManager.refresh();
 
     SwapBuffers(state->getHDC());
 }

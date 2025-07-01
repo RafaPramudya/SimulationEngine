@@ -16,7 +16,8 @@ public:
     void update();
     void mouseEvent();
 
-    glm::mat4 getView();
+    glm::mat4 getView() { return view; }
+    glm::mat4 getProjection() { return projection; }
 
     glm::vec3& getPos() { return position; }
     glm::vec3& getFront() { return front; }
@@ -25,6 +26,9 @@ private:
     glm::vec3 position;
     glm::vec3 front;
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    glm::mat4 view;
+    glm::mat4 projection;
 
     f32 yaw, pitch, roll;
 };

@@ -58,6 +58,7 @@ file(GLOB_RECURSE SRC_FILE CONFIGURE_DEPENDS
     core/windows/*.cpp
     core/utils/*.cpp
     core/render/*.cpp
+    core/component/*.cpp
     core/main.cpp  # Explicitly include main.c
 )
 

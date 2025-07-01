@@ -56,11 +56,11 @@ void Mesh::setupMesh() {
     GLObj->addAttribute(3);
     GLObj->addAttribute(2);
     GLObj->compileAttribute();
-    glBindVertexArray(0);
+
 }
 
-void Mesh::draw(ShaderProgID pID) {
-    glUseProgram(pID);
+void Mesh::draw(ShaderProg& shader) {
+    shader.use();
 
     u32 diffuseNr = 0;
     for (u32 i = 0; i < textures.size(); i++) {
@@ -76,7 +76,8 @@ void Mesh::draw(ShaderProgID pID) {
             break;
         }
 
-        glUniform1i(glGetUniformLocation(pID, name.c_str()), i);
+        // glUniform1i(glGetUniformLocation(pID, name.c_str()), i);
+        shader.setUniform(name.c_str(), (i32)i);
         textures[i].bind();
     }
     glActiveTexture(GL_TEXTURE0);

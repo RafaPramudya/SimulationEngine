@@ -4,6 +4,7 @@
 #include "windows/context.h"
 #include "render/renderer.h"
 #include "render/camera.h"
+#include "component/component.h"
 #include "wchar.h"
 
 #include <cstdio>
@@ -81,7 +82,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             }
         }
         
-        renderer->renderEvent();
+        renderer->renderEventUpdate();
         renderer->render();
         event->swapKeyBuffer();
         printf("");

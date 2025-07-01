@@ -1,9 +1,10 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "utils/types.h"
-#include "model.h"
+#include "component.h"
+#include "render/shader.h"
 
+#include "utils/types.h"
 #include <glm/glm.hpp>
 
 typedef struct Attenuation {
@@ -12,15 +13,17 @@ typedef struct Attenuation {
     f32 quadratic;
 } Attenuation;
 
-class Light : public Model
+class Light : public Component
 {
 private:
     Attenuation attenuation;
     glm::vec3 color;
     const char* name;
+
 public:
-    Light(const char* name, f32* lpverts, size_t vertsSz, u32* lpinds, size_t indsSz) 
-        : Model(lpverts, vertsSz, lpinds, indsSz) { Light::name = name; }
+    static std::vector<Light*> lights;
+
+    Light(const char* name) : name(name) { lights.push_back(this); }
     ~Light() = default;
 
     inline const char* getName() const {return name;}
@@ -29,6 +32,7 @@ public:
 
     void setLight(f32 constant, f32 linear, f32 quadratic, glm::vec3& color);
     void setLight(f32 constant, f32 linear, f32 quadratic, glm::vec3&& color);
+    void setUniform(ShaderProg& shader);
 };
 
 

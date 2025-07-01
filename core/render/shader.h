@@ -2,7 +2,6 @@
 #define SHADER_H
 
 #include "utils/types.h"
-#include "light.h"
 #include <glm/glm.hpp>
 
 typedef unsigned int GLenum;
@@ -24,10 +23,11 @@ public:
     void use();
     u32 getPId() { return pId; }
 
+    void setUniform(const char* location, i32 value);
     void setUniform(const char* location, f32 value);
-    void setUniform(const char* location, glm::mat4& matrix);
+    void setUniform(const char* location, glm::mat4 matrix);
     void setUniform(const char* location, glm::vec3& vector);
-    void setUniform(Light& light);
+    // void setUniform(Light& light);
 
     void attachShader(Shader& shader);
     void linkProgram();

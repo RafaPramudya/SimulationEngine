@@ -37,11 +37,15 @@ void ShaderProg::use() {
     glUseProgram(pId);
 }
 
+void ShaderProg::setUniform(const char* location, i32 value) {
+    glUniform1i(glGetUniformLocation(pId, location), value);
+}
+
 void ShaderProg::setUniform(const char* location, f32 value) {
     glUniform1f(glGetUniformLocation(pId, location), value);
 }
 
-void ShaderProg::setUniform(const char* location, glm::mat4& matrix) {
+void ShaderProg::setUniform(const char* location, glm::mat4 matrix) {
     glUniformMatrix4fv(glGetUniformLocation(pId, location), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
@@ -49,15 +53,7 @@ void ShaderProg::setUniform(const char* location, glm::vec3& vector) {
     glUniform3fv(glGetUniformLocation(pId, location), 1, glm::value_ptr(vector));
 }
 
-void ShaderProg::setUniform(Light& light) {
-    std::string lightName = light.getName();
 
-    setUniform((lightName + ".position").c_str(), light.transform.translation);
-    setUniform((lightName + ".color").c_str(), light.getColor());
-    setUniform((lightName + ".constant").c_str(), light.getAttenuation().constant);
-    setUniform((lightName + ".linear").c_str(), light.getAttenuation().linear);
-    setUniform((lightName + ".quadratic").c_str(), light.getAttenuation().quadratic);
-}
 
 void ShaderProg::attachShader(Shader& shader) {
     glAttachShader(pId, shader.id);

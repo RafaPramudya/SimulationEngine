@@ -32,6 +32,9 @@ void Camera::update() {
     if (event->isKeyDown(VK_SHIFT)) {
         position -= up * velocity;
     }
+
+    view = glm::lookAt(position, position + front, up);
+    projection = glm::perspective(glm::radians(50.0f), (float)state->getWidth() / (float)state->getHeight(), 0.1f, 100.0f);
 }
 
 void Camera::mouseEvent() {
@@ -52,8 +55,4 @@ void Camera::mouseEvent() {
     );
 
     front = glm::normalize(direction);
-}
-
-glm::mat4 Camera::getView() {
-    return glm::lookAt(position, position + front, up);
 }

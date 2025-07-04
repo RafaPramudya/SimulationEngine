@@ -32,7 +32,7 @@ public:
         if (entity->hasComponent<Light>()) {
             shader->setUniform("color", entity->getComponent<Light>().getColor());
         } else 
-            for (auto& l : Light::lights) l->setUniform(*shader);
+            Light::setUniform(*shader);
         model.draw(*shader);
     }
 };

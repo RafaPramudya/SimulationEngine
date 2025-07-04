@@ -9,6 +9,8 @@ struct Light {
     float quadratic;
 };
 
+#define MAX_LIGHTS 32
+
 out vec4 FragColor;
 
 in vec2 mTexCoord;
@@ -16,44 +18,44 @@ in vec3 mNormal;
 in vec3 mFragPos;
 
 uniform sampler2D diffuse0;
-uniform Light light;
+uniform Light lights[MAX_LIGHTS];
 uniform vec3 viewPos;
-
-void ambientShader(out vec3 ambient) {
-    float ambientStrength = 0.1;
-    ambient = ambientStrength * light.color;
-}
-
-void diffuseShader(out vec3 diffuse) {
-    vec3 norm = normalize(mNormal);
-    vec3 lightDir = normalize(light.position - mFragPos);
-    float diffusion = max(dot(norm, lightDir), 0.0);
-    diffuse = diffusion * light.color;
-}
-
-void specularShader(out vec3 specular) {
-    float specularStrength = 0.5;
-    vec3 norm = normalize(mNormal);
-    vec3 lightDir = normalize(light.position - mFragPos);
-
-    vec3 viewDir = normalize(viewPos - mFragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
-
-    float specularization = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-    specular = specularization * specularStrength * light.color;
-}
 
 void main() {
     vec4 objColor = texture(diffuse0, mTexCoord);
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
+    vec3 norm = normalize(mNormal);
+    vec3 viewDir = normalize(viewPos - mFragPos);
+    vec3 result = vec3(0.0);
 
-    ambientShader(ambient);
-    diffuseShader(diffuse);
-    specularShader(specular);
+    for (int i = 0; i < MAX_LIGHTS; i++) {
+        if (
+            lights[i].constant == 0.0
+            ) break;
 
-    vec3 combinedLight = ambient + diffuse + specular;
-    vec4 result = vec4(combinedLight, 1.0) * objColor;
-    FragColor = result;
+        float distance    = length(lights[i].position - mFragPos);
+        float attenuation = 1.0 / (lights[i].constant + lights[i].linear * distance + 
+    		    lights[i].quadratic * (distance * distance));  
+
+        float ambientStrength = 0.1;
+        vec3 ambient = ambientStrength * lights[i].color;
+
+        vec3 lightDir = normalize(lights[i].position - mFragPos);
+        float diffusion = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = diffusion * lights[i].color;
+
+        float specularStrength = 0.5;
+        vec3 reflectDir = reflect(-lightDir, norm);
+
+        float specularization = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+        vec3 specular = specularization * specularStrength * lights[i].color;
+
+        ambient *= attenuation;
+        diffuse *= attenuation;
+        specular *= attenuation;
+
+        result += ambient + diffuse + specular;
+        // result += diffuse + specular;
+    }
+
+    FragColor = vec4(result, 1.0) * objColor;
 }

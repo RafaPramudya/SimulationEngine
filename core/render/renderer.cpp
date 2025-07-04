@@ -20,6 +20,7 @@ Renderer* renderer = nullptr;
 
 auto& planet (eManager.addEntity());
 auto& wakakak (eManager.addEntity());
+auto& matahari (eManager.addEntity());
 
 Renderer::Renderer() {
 
@@ -45,14 +46,19 @@ Renderer::Renderer() {
     // light->setLight(1.0, 0.09, 0.032, glm::vec3(1.0f, 0.95f, 0.8f));
     auto& lightTransform = wakakak.addComponent<Transform>();
     wakakak.addComponent<Render>(quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds), &light_prog);
-    auto& lightComponent = wakakak.addComponent<Light>("light");
-    lightComponent.setLight(1.0, 0.09, 0.032, glm::vec3(0.5f));
-
-    // vec3 lightColor = {1.0f, 0.95f, 0.8f}; // sunlight color (warm white)
-    // vec3 lightPos = {2.0f, 1.0f, 1.5f};
+    auto& lightComponent = wakakak.addComponent<Light>();    
     // glm::vec3 lightColor(1.0f, 0.95f, 0.8f); // sunlight color (warm white)
+    lightComponent.setLight(1.0, 0.007, 0.0002, glm::vec3(1.0f));
     lightTransform.translate(glm::vec3(2.0f, 1.0f, 1.5f));
     lightTransform.scale(glm::vec3(0.5, 1.0, 0.25));
+
+    auto& matahariTransform = matahari.addComponent<Transform>();
+    matahari.addComponent<Render>("assets/model/wop.gltf", &light_prog);
+    auto& matahariComponent = matahari.addComponent<Light>();
+
+    matahariComponent.setLight(1.0, 0.007, 0.0002, glm::vec3(1.0f, 0.95f, 0.8f));
+    matahariTransform.translate(glm::vec3(-4.0f, 1.0f, -3.0f));
+    matahariTransform.scale(glm::vec3(0.5f));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -82,7 +88,8 @@ void Renderer::renderEventUpdate() {
         event->captureMouse(usingMouse);
     }
     
-    // planet.getComponent<Transform>().rotate(90 * state->deltaTime, glm::vec3(0, 1, 0));
+    planet.getComponent<Transform>().translate(glm::vec3(0.0f, 0.25f, 0.1f) * (f32)state->deltaTime);
+    planet.getComponent<Transform>().rotate(90 * state->deltaTime, glm::vec3(0, 1, 0));
     camera->update();
     eManager.update();
 }

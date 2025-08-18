@@ -20,12 +20,17 @@ in vec3 mFragPos;
 uniform sampler2D diffuse0;
 uniform Light lights[MAX_LIGHTS];
 uniform vec3 viewPos;
+uniform vec3 camFront;
 
 void main() {
     vec4 objColor = texture(diffuse0, mTexCoord);
-    vec3 norm = normalize(mNormal);
+    vec3 norm = mNormal;
     vec3 viewDir = normalize(viewPos - mFragPos);
     vec3 result = vec3(0.0);
+
+    if (dot(norm, camFront) > 0.0) {
+        discard;
+    }
 
     for (int i = 0; i < MAX_LIGHTS; i++) {
         if (

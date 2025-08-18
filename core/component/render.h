@@ -29,6 +29,7 @@ public:
         shader->setUniform("model", transform.getMatrix());
         shader->setUniform("view", camera->getView());
         shader->setUniform("projection", camera->getProjection());
+        shader->setUniform("camFront", camera->getFront());
         if (entity->hasComponent<Light>()) {
             shader->setUniform("color", entity->getComponent<Light>().getColor());
         } else 

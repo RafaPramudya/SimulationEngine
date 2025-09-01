@@ -25,6 +25,11 @@ public:
     inline HGLRC& getHGLRC() {return hglrc;}
 
     void resize(u32 width, u32 height);
+
+    // All flags
+    bool polygonFill = true;
+    bool usingMouse = true;
+    bool lightEnabled = true;
 private:
     bool running;
     

@@ -75,17 +75,16 @@ Renderer::Renderer() {
 }
 
 void Renderer::renderEventUpdate() {
-    static bool polygonFill = true;
-    static bool usingMouse = true;
-
     if (event->isKeyPressed('P')) {
-        if (polygonFill) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); polygonFill = !polygonFill; }
-        else { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); polygonFill = !polygonFill; }
+        if (state->polygonFill) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); state->polygonFill = !state->polygonFill; }
+        else { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); state->polygonFill = !state->polygonFill; }
     }
-
+    if (event->isKeyPressed('L')) {
+        state->lightEnabled = !state->lightEnabled;
+    }
     if (event->isKeyPressed(VK_F5)) {
-        usingMouse = !usingMouse;
-        event->captureMouse(usingMouse);
+        state->usingMouse = !state->usingMouse;
+        event->captureMouse(state->usingMouse);
     }
     
     planet.getComponent<Transform>().translate(glm::vec3(0.0f, 0.25f, 0.1f) * (f32)state->deltaTime);

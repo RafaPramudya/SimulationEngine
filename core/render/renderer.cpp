@@ -6,6 +6,8 @@
 #include "component/transform.h"
 #include "component/render.h"
 #include "component/light.h"
+#include "component/physics_component.h"
+#include "component/physics_updater.h"
 
 #include "glad/glad.h"
 #include "glad/glad_wgl.h"
@@ -36,25 +38,22 @@ Renderer::Renderer() {
     light_prog.attachShader(light_frg);
     light_prog.linkProgram();
 
-    // basic.emplace(quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds));
-    // basic->addTextureFirstMesh("assets/images/orang_jelek.jpg", TextureType::DIFFUSE);
-    // basic.emplace("assets/model/wop.gltf");
     planet.addComponent<Transform>();
     planet.addComponent<Render>("assets/model/wop.gltf", &main_prog);
+    planet.addComponent<Physics>(1.0f, glm::vec3(0.0f, 5.0f, 0.0f));
 
-    // light.emplace("light", quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds));
-    // light->setLight(1.0, 0.09, 0.032, glm::vec3(1.0f, 0.95f, 0.8f));
-    auto& lightTransform = wakakak.addComponent<Transform>();
-    wakakak.addComponent<Render>(quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds), &light_prog);
-    auto& lightComponent = wakakak.addComponent<Light>();    
-    // glm::vec3 lightColor(1.0f, 0.95f, 0.8f); // sunlight color (warm white)
-    lightComponent.setLight(1.0, 0.007, 0.0002, glm::vec3(1.0f));
-    lightTransform.translate(glm::vec3(2.0f, 1.0f, 1.5f));
-    lightTransform.scale(glm::vec3(0.5, 1.0, 0.25));
+    // auto& lightTransform = wakakak.addComponent<Transform>();
+    // wakakak.addComponent<Render>(quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds), &light_prog);
+    // auto& lightComponent = wakakak.addComponent<Light>();    
+    // // glm::vec3 lightColor(1.0f, 0.95f, 0.8f); // sunlight color (warm white)
+    // lightComponent.setLight(1.0, 0.007, 0.0002, glm::vec3(1.0f));
+    // lightTransform.translate(glm::vec3(2.0f, 1.0f, 1.5f));
+    // lightTransform.scale(glm::vec3(0.5, 1.0, 0.25));
 
     auto& matahariTransform = matahari.addComponent<Transform>();
-    matahari.addComponent<Render>("assets/model/wop.gltf", &light_prog);
+    matahari.addComponent<Render>("assets/model/planet.gltf", &light_prog);
     auto& matahariComponent = matahari.addComponent<Light>();
+
 
     matahariComponent.setLight(1.0, 0.007, 0.0002, glm::vec3(1.0f, 0.95f, 0.8f));
     matahariTransform.translate(glm::vec3(-4.0f, 1.0f, -3.0f));
@@ -86,17 +85,25 @@ void Renderer::renderEventUpdate() {
         state->usingMouse = !state->usingMouse;
         event->captureMouse(state->usingMouse);
     }
+    if (event->isKeyPressed('K')) {
+        phySys.togglePause();
+    }
     
-    planet.getComponent<Transform>().translate(glm::vec3(0.0f, 0.25f, 0.1f) * (f32)state->deltaTime);
-    planet.getComponent<Transform>().rotate(90 * state->deltaTime, glm::vec3(0, 1, 0));
+    // planet.getComponent<Transform>().translate(glm::vec3(0.0f, 0.25f, 0.1f) * (f32)state->deltaTime);
+    // planet.getComponent<Transform>().rotate(90 * state->deltaTime, glm::vec3(0, 1, 0));
+
+    // auto& mtr = matahari.getComponent<Transform>();
+    // mtr.translate(glm::vec3(0.2f, 0.04f, 0.1f) * (f32)state->deltaTime);
+
     camera->update();
     eManager.update();
 }
 
 void Renderer::render() {
-    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     // glClearColor(0.53f, 0.81f, 0.92f, 1.0f); // Sky blue color
-    glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
+    // glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
+    // glClearColor(15.0f / 255.0f, 12.0f / 255.0f, 38.0f / 255.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     eManager.render();
     eManager.refresh();

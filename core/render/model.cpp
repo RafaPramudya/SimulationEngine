@@ -210,9 +210,6 @@ std::vector<Texture> Model::loadTextures(aiMaterial* mat, aiTextureType typeName
 
             textures.emplace_back(texturePath, type, false);
             loaded.emplace_back(texturePath, type, false);
-            // Debug print for texture path and OpenGL ID
-            // printf("Loaded texture: %s\n", texturePath.c_str());
-            // printf("Texture OpenGL ID: %u\n", loaded.back().getId());
         }
     }
 

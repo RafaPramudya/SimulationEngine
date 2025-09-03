@@ -29,9 +29,13 @@ void main() {
     vec3 viewDir = normalize(viewPos - mFragPos);
     vec3 result = vec3(0.0);
 
-    if (dot(norm, camFront) > 0.0) {
-        discard;
-    }
+    // if (dot(norm, camFront) > 0.0) {
+    //     discard;
+    // }
+    // float angle = degrees(acos(dot(normalize(norm), normalize(camFront))));
+    // if (angle > 175.0) {
+    //     discard;
+    // }
 
     if (lightEnabled) {
         for (int i = 0; i < MAX_LIGHTS; i++) {

@@ -5,6 +5,7 @@
 #include "render/renderer.h"
 #include "render/camera.h"
 #include "component/component.h"
+#include "physics/system.h"
 #include "wchar.h"
 
 #include <cstdio>
@@ -45,6 +46,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     Camera camera_ins;
     camera = &camera_ins;
 
+    phySys.start();
+
     f64 lastTime = get_hp_time();
     f64 currentTime, fps;
     f64 passedFPS = 0.0;
@@ -63,7 +66,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         if (passedFPS >= 1.0) {
 
             wchar_t buffer[128];
-            swprintf(buffer, 128, L"Tung Tung Sahur - %d FPS, %lf dT", frameCount, state->deltaTime);
+            swprintf(buffer, 128, L"FISIKAAAA!! - %d FPS, %lf dT", frameCount, state->deltaTime);
             SetWindowText(hwnd, buffer);
 
             frameCount = 0;
@@ -87,6 +90,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         event->swapKeyBuffer();
         printf("");
     }
+
+    phySys.stop();
 
     Context::destroy();
     return 0;

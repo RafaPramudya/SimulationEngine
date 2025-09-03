@@ -13,16 +13,12 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}" CACHE INTERNAL "")
 
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_definitions(-DDEBUG)
-else()
-    if(MSVC)
-        add_compile_options(/O2)
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        add_compile_options(-O3)
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        add_compile_options(-O3)
-    endif()
+if(MSVC)
+    add_compile_options(/O2)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-O3)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_compile_options(-O3)
 endif()
 
 add_definitions(
@@ -54,12 +50,13 @@ file(GLOB_RECURSE SRC_FILE CONFIGURE_DEPENDS
     core/utils/*.cpp
     core/render/*.cpp
     core/component/*.cpp
-    core/physics/*.cpp
+    # core/physics/*.cpp
     core/main.cpp  # Explicitly include main.c
 )
 
 set(CGLM_STATIC ON)
 
+add_definitions(-DDEBUG)
 # Set the linker subsystem to WINDOWS for Windows native applications
 if (WIN32 AND MSVC)
     set(EXECUTABLE_NAME ${PROJECT_NAME})

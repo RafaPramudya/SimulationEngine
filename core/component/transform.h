@@ -37,6 +37,15 @@ public:
     void scale(const glm::vec3& factor) {
         scalar *= factor;
     }
+    void setTranslation(const glm::vec3& value) {
+        translation = value;
+    }
+    void setRotation(float deg, const glm::vec3& axis) {
+        rotation = glm::angleAxis(glm::radians(deg), glm::normalize(axis));
+    }
+    void setScalar(const glm::vec3& value) {
+        scalar = value;
+    }
     glm::mat4 getMatrix() {
         glm::mat4 model(1.0f);
         model = glm::translate(model, translation);

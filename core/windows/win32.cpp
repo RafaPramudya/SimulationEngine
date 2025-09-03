@@ -80,7 +80,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     }
     
 BOOL InitializeWindow(HWND* _outWndHandle, HINSTANCE hInstance, int nCmdShow, u32 w_width, u32 w_height) {
-    const wchar_t WindowName[] = L"Tung Tung Engine";
+    const wchar_t WindowName[] = L"FISIKAA!!!!";
     const wchar_t ClassName[] = L"Engine Window Class";
     WNDCLASSEX wcex = {0};
 

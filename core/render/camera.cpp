@@ -34,7 +34,7 @@ void Camera::update() {
     }
 
     view = glm::lookAt(position, position + front, up);
-    projection = glm::perspective(glm::radians(50.0f), (float)state->getWidth() / (float)state->getHeight(), 0.1f, 200.0f);
+    projection = glm::perspective(glm::radians(50.0f), (float)state->getWidth() / (float)state->getHeight(), 0.1f, 500.0f);
 }
 
 void Camera::mouseEvent() {

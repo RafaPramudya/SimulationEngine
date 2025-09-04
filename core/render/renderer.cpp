@@ -40,7 +40,7 @@ Renderer::Renderer() {
 
     planet.addComponent<Transform>();
     planet.addComponent<Render>("assets/model/wop.gltf", &main_prog);
-    planet.addComponent<Physics>(1.0f, glm::vec3(0.0f, 5.0f, 0.0f));
+    planet.addComponent<Physics>(1.0f, glm::vec3(5.0f, 9.0f, 0.0f));
 
     // auto& lightTransform = wakakak.addComponent<Transform>();
     // wakakak.addComponent<Render>(quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds), &light_prog);
@@ -100,9 +100,9 @@ void Renderer::renderEventUpdate() {
 }
 
 void Renderer::render() {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     // glClearColor(0.53f, 0.81f, 0.92f, 1.0f); // Sky blue color
-    // glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
+    glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
     // glClearColor(15.0f / 255.0f, 12.0f / 255.0f, 38.0f / 255.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     eManager.render();

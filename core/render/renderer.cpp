@@ -38,26 +38,24 @@ Renderer::Renderer() {
     light_prog.attachShader(light_frg);
     light_prog.linkProgram();
 
-    planet.addComponent<Transform>();
+    planet.addComponent<Transform>().scale(glm::vec3(0.5f));
+    planet.getComponent<Transform>().translate(glm::vec3(0.0, 2.0, -7.0));
     planet.addComponent<Render>("assets/model/wop.gltf", &main_prog);
-    planet.addComponent<Physics>(1.0f, glm::vec3(5.0f, 9.0f, 0.0f));
+    planet.addComponent<Physics>(5.0f, glm::vec3(4.0f, 0.0f, 0.0f));
 
     // auto& lightTransform = wakakak.addComponent<Transform>();
     // wakakak.addComponent<Render>(quadVerts, sizeof(quadVerts), quadInds, sizeof(quadInds), &light_prog);
     // auto& lightComponent = wakakak.addComponent<Light>();    
-    // // glm::vec3 lightColor(1.0f, 0.95f, 0.8f); // sunlight color (warm white)
+    // // glm::vec3 lightColor(1.0f, 0.95f, 0.8f); /x/ sunlight color (warm white)
     // lightComponent.setLight(1.0, 0.007, 0.0002, glm::vec3(1.0f));
     // lightTransform.translate(glm::vec3(2.0f, 1.0f, 1.5f));
     // lightTransform.scale(glm::vec3(0.5, 1.0, 0.25));
 
-    auto& matahariTransform = matahari.addComponent<Transform>();
+    matahari.addComponent<Transform>().scale(glm::vec3(0.5));
+    matahari.getComponent<Transform>().translate(glm::vec3(0.0, 0.0, 3.0));
     matahari.addComponent<Render>("assets/model/planet.gltf", &light_prog);
-    auto& matahariComponent = matahari.addComponent<Light>();
-
-
-    matahariComponent.setLight(1.0, 0.007, 0.0002, glm::vec3(1.0f, 0.95f, 0.8f));
-    matahariTransform.translate(glm::vec3(-4.0f, 1.0f, -3.0f));
-    matahariTransform.scale(glm::vec3(0.5f));
+    matahari.addComponent<Light>().setLight(1.0, 0.007, 0.0002, glm::vec3(1.0f, 0.95f, 0.8f));
+    matahari.addComponent<Physics>(20.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -100,9 +98,9 @@ void Renderer::renderEventUpdate() {
 }
 
 void Renderer::render() {
-    // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     // glClearColor(0.53f, 0.81f, 0.92f, 1.0f); // Sky blue color
-    glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
+    // glClearColor(0.05f, 0.07f, 0.15f, 1.0f); // Dark night sky color
     // glClearColor(15.0f / 255.0f, 12.0f / 255.0f, 38.0f / 255.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     eManager.render();

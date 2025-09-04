@@ -4,6 +4,23 @@ static glm::vec3 calculateAcceleration() {
     return glm::vec3(0.0, -4.5, 0.0);
 }
 
+static glm::vec3 calculateGravity(PhysicsComponent* b, std::vector<PhysicsComponent*>& snapshot) {
+    glm::vec3 acceleration{0.0f};
+    for (auto* body : snapshot) {
+        if (body == b) continue;
+        constexpr auto gravityConstant = 6.67;
+
+        auto directionVector = body->position - b->position;
+        auto directionNormal = glm::normalize(directionVector);
+        auto directionLength = glm::length(directionVector);
+
+        auto strength = (gravityConstant * body->mass) / (directionLength * directionLength);
+        acceleration += directionNormal * static_cast<f32>(strength);
+    }
+
+    return acceleration;
+}
+
 static glm::vec3 calculateVelocity(glm::vec3& currentVelocity, glm::vec3& currentAcceleration, glm::vec3& acceleration, f32 dT) {
     glm::vec3 acc = currentAcceleration + acceleration;
     glm::vec3 result = currentVelocity + acc * (dT / 2);
@@ -85,7 +102,7 @@ void PhysicsSystem::performStep(f32 dT) {
         glm::vec3 acceleration = b->acceleration;
 
         b->acceleration = glm::vec3(0.0f);
-        b->acceleration += calculateAcceleration();
+        b->acceleration += calculateGravity(b, snapshot);
 
         b->velocity = calculateVelocity(velocity, acceleration, b->acceleration, dT);
 
